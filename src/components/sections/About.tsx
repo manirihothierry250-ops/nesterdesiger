@@ -31,8 +31,13 @@ export function About() {
                 “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve, it is the relationships we build that will endure. I look forward to working closely with you and your team.”
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-brand-gold/20 border border-brand-gold flex items-center justify-center font-black text-brand-gold">
-                  JN
+                <div className="w-14 h-14 rounded-full border border-brand-gold overflow-hidden">
+                  <img 
+                    src="/profile.png" 
+                    alt="Jean Nesta" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
                 <div>
                   <h4 className="font-bold text-white text-lg">Jean Nesta</h4>

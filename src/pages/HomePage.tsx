@@ -92,7 +92,7 @@ function FounderSection() {
             <div className="aspect-[4/5] rounded-3xl overflow-hidden glass p-2">
               <div className="w-full h-full bg-white/10 rounded-2xl overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
                 <img
-                  src="https://picsum.photos/seed/founder/800/1000"
+                  src="/profile.png"
                   alt="Jean Nesta"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"

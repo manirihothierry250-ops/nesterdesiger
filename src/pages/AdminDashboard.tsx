@@ -90,8 +90,16 @@ export function AdminDashboard() {
                  activeTab === 'profile' ? "ring-2 ring-brand-gold" : "hover:bg-white/5"
                )}
              >
-               <div className="w-8 h-8 bg-brand-blue rounded-full border border-white/10 flex items-center justify-center font-bold text-xs">
-                 {user.email?.[0].toUpperCase()}
+               <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center overflow-hidden">
+                 <img 
+                   src="/profile.png" 
+                   alt="Admin" 
+                   className="w-full h-full object-cover"
+                   referrerPolicy="no-referrer"
+                   onError={(e) => {
+                     (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${user.email}&background=002147&color=fff`;
+                   }}
+                 />
                </div>
                <span className="text-sm font-bold">{user.email?.split('@')[0]}</span>
              </button>
@@ -379,7 +387,18 @@ function AdminProfile() {
         <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
           <div className="relative group">
             <div className="w-40 h-40 rounded-3xl bg-brand-black border-2 border-brand-gold/20 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-brand-gold">
-              <UserIcon size={80} className="text-brand-gold/40 group-hover:text-brand-gold/60 transition-colors" />
+              <img 
+                src="/profile.png" 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  // Fallback to Icon if image doesn't exist
+                  (e.target as HTMLImageElement).classList.add('hidden');
+                  (e.target as HTMLImageElement).parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                }}
+              />
+              <UserIcon size={80} className="text-brand-gold/40 group-hover:text-brand-gold/60 transition-colors hidden fallback-icon" />
             </div>
             <div className="absolute -bottom-2 -right-2 p-3 bg-brand-gold text-brand-black rounded-xl shadow-xl">
                <Shield size={16} />

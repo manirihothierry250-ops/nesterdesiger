@@ -1,0 +1,81 @@
+{
+  "entities": {
+    "Service": {
+      "title": "Service",
+      "description": "ICT services offered by Nesta Design",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string", "description": "Lucide icon name" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "active"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Item",
+      "description": "Posters and photos in the gallery",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "category": { "type": "string" },
+        "uploadedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl", "uploadedAt"]
+    },
+    "ServiceRequest": {
+      "title": "Service Request",
+      "description": "Customer requests for services",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "location": { "type": "string" },
+        "serviceNeeded": { "type": "string" },
+        "projectType": { "type": "string" },
+        "budget": { "type": "string" },
+        "deadline": { "type": "string" },
+        "description": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "phone", "serviceNeeded", "createdAt"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client feedback and testimonials",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "content": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "content", "active"]
+    }
+  },
+  "firestore": {
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Collection of ICT services"
+    },
+    "/gallery/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Collection of gallery posters/photos"
+    },
+    "/requests/{requestId}": {
+      "schema": "ServiceRequest",
+      "description": "Collection of customer service requests"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "Testimonial",
+      "description": "Collection of client testimonials"
+    }
+  }
+}

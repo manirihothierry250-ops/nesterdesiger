@@ -60,13 +60,36 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Hero Side Grid */}
-          <div className="lg:col-span-5 hidden lg:grid grid-cols-2 gap-4 h-fit">
-             <HeroCard title="Web Development" desc="Enterprise-grade websites & apps." delay={0.2} />
-             <HeroCard title="Branding" desc="Corporate identity & logo engineering." delay={0.3} className="mt-8" />
-             <HeroCard title="Media Services" desc="Cinematic photo & video production." delay={0.4} />
-             <HeroCard title="ICT Consultancy" desc="Digital transformation strategy." delay={0.5} className="mt-8" />
-          </div>
+          {/* Hero Side Image */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, x: 50 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 hidden lg:block"
+          >
+            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden glass p-3 group border border-white/10 hover:border-brand-gold/30 transition-all duration-700">
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000">
+                <img 
+                  src="/profile.png" 
+                  alt="Jean Nesta Profile" 
+                  className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "https://picsum.photos/seed/nesta-profile/1000/1200";
+                  }}
+                />
+              </div>
+              
+              {/* Decorative Accents */}
+              <div className="absolute top-10 right-10 w-20 h-20 bg-brand-gold/10 rounded-full blur-2xl animate-pulse"></div>
+              <div className="absolute bottom-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+              
+              <div className="absolute bottom-10 right-10 bg-brand-black/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                 <p className="text-brand-gold font-black uppercase text-[10px] tracking-widest mb-1">Founder & CEO</p>
+                 <p className="text-white font-bold text-lg">Jean Nesta</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

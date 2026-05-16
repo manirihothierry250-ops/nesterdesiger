@@ -1,73 +1,27 @@
 import React from 'react';
 import { Hero } from '../components/sections/Hero';
-import { About } from '../components/sections/About';
-import { Services } from '../components/sections/Services';
 import { ServiceRequestForm } from '../components/sections/ServiceRequestForm';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, ArrowRight } from 'lucide-react';
+import { cn } from '../lib/utils';
+import { AnimatePresence } from 'framer-motion';
 
 export function HomePage() {
   return (
     <main className="relative">
       <Hero />
-      <About />
-      <Services />
       <FounderSection />
-      <ServiceRequestForm />
 
       {/* Contact Section */}
       <section id="contact" className="py-24 bg-brand-black">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            <div>
-              <h2 className="text-4xl font-heading font-black mb-8">Get In <span className="text-brand-gold">Touch</span></h2>
-              <p className="text-slate-400 mb-12 text-lg">
-                Have a project in mind or just want to say hi? We'd love to hear from you.
-              </p>
-
-              <div className="space-y-8">
-                <ContactInfo icon={Phone} label="Call Us" value="+250 782 739 381" href="tel:+250782739381" />
-                <ContactInfo icon={Mail} label="Email Us" value="jeanesta81@gmail.com" href="mailto:jeanesta81@gmail.com" />
-                <ContactInfo icon={MapPin} label="Visit Us" value="Kigali – Rwanda" href="#" />
-              </div>
-
-              <div className="mt-16">
-                <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>
-                <div className="flex flex-wrap gap-4">
-                  {['Facebook', 'Instagram', 'Twitter', 'Linkedin', 'Youtube', 'Tiktok'].map((social) => (
-                    <a
-                      key={social}
-                      href="#"
-                      className="px-6 py-3 glass rounded-xl text-sm font-medium hover:bg-brand-gold hover:text-brand-black transition-all flex items-center gap-2"
-                    >
-                      {social} <ExternalLink size={14} />
-                    </a>
-                  ))}
-                </div>
-              </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-6xl font-heading font-black mb-4">Let's <span className="text-brand-gold">Connect</span></h2>
+              <p className="text-slate-400">Choose how you'd like to reach us below.</p>
             </div>
 
-            <div className="relative">
-              <div className="aspect-square rounded-3xl overflow-hidden glass p-2">
-                <div className="w-full h-full bg-white/5 rounded-2xl relative overflow-hidden">
-                   {/* Maps placeholder or illustrative element */}
-                   <div className="absolute inset-0 bg-brand-blue/20"></div>
-                   <div className="absolute inset-0 flex items-center justify-center">
-                     <div className="text-center">
-                        <MapPin size={48} className="mx-auto mb-4 text-brand-gold" />
-                        <p className="font-bold text-2xl">Kigali, Rwanda</p>
-                        <p className="text-slate-400">Headquarters</p>
-                     </div>
-                   </div>
-                </div>
-              </div>
-
-              {/* Stats Floating */}
-              <div className="absolute -bottom-10 -left-10 glass-gold p-8 rounded-3xl hidden md:block">
-                <p className="text-3xl font-black mb-1">99%</p>
-                <p className="text-xs font-bold text-brand-gold uppercase tracking-tighter">Client Satisfaction</p>
-              </div>
-            </div>
+            <ContactTabs />
           </div>
         </div>
       </section>
@@ -121,6 +75,9 @@ function FounderSection() {
               Leading With <br />
               <span className="text-gradient uppercase">Passion & Vision</span>
             </h2>
+            <div className="glass p-6 rounded-2xl border-l-4 border-brand-gold italic text-slate-300 text-sm">
+              “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure. I look forward to working closely with you and your team.”
+            </div>
             <p className="text-slate-400 text-lg leading-relaxed font-light">
               With over a decade of experience in the ICT industry, Jean Nesta leads a team of creatives and engineers at Nesta Design. Our focus is on bridging the gap between business goals and innovative digital solutions.
             </p>
@@ -147,6 +104,89 @@ function FounderSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+function ContactTabs() {
+  const [activeTab, setActiveTab] = React.useState<'info' | 'service'>('service');
+
+  return (
+    <div>
+      <div className="flex justify-center mb-12">
+        <div className="flex p-1 bg-white/5 rounded-2xl border border-white/10">
+          <button
+            onClick={() => setActiveTab('info')}
+            className={cn(
+              "px-8 py-3 rounded-xl text-sm font-bold transition-all",
+              activeTab === 'info' ? "bg-brand-gold text-brand-black" : "text-slate-400 hover:text-white"
+            )}
+          >
+            Contact Info
+          </button>
+          <button
+            onClick={() => setActiveTab('service')}
+            className={cn(
+              "px-8 py-3 rounded-xl text-sm font-bold transition-all",
+              activeTab === 'service' ? "bg-brand-gold text-brand-black" : "text-slate-400 hover:text-white"
+            )}
+          >
+            Request Service
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === 'info' ? (
+          <motion.div
+            key="info"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            <div className="space-y-8">
+              <ContactInfo icon={Phone} label="Call Us" value="+250 782 739 381" href="tel:+250782739381" />
+              <ContactInfo icon={Mail} label="Email Us" value="jeanesta81@gmail.com" href="mailto:jeanesta81@gmail.com" />
+              <ContactInfo icon={MapPin} label="Visit Us" value="Kigali – Rwanda" href="#" />
+              
+              <div className="pt-8">
+                <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>
+                <div className="flex flex-wrap gap-4">
+                  {['Facebook', 'Instagram', 'Twitter', 'Linkedin', 'Youtube'].map((social) => (
+                    <a
+                      key={social}
+                      href="#"
+                      className="px-6 py-3 glass rounded-xl text-sm font-medium hover:bg-brand-gold hover:text-brand-black transition-all flex items-center gap-2"
+                    >
+                      {social} <ExternalLink size={14} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="aspect-square rounded-3xl overflow-hidden glass p-2">
+              <div className="w-full h-full bg-white/5 rounded-2xl relative overflow-hidden flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin size={64} className="mx-auto mb-6 text-brand-gold opacity-50" />
+                  <p className="text-2xl font-black uppercase font-heading tracking-widest">Kigali, Rwanda</p>
+                  <p className="text-slate-500">Our Innovative Hub</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="service"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="max-w-3xl mx-auto"
+          >
+            <ServiceRequestForm />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 

@@ -259,6 +259,7 @@ function ServicesManager() {
 
 function RequestsManager() {
   const [requests, setRequests] = useState<any[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'requests'), orderBy('createdAt', 'desc'));
@@ -267,52 +268,121 @@ function RequestsManager() {
 
   const updateStatus = async (id: string, status: string) => {
     await updateDoc(doc(db, 'requests', id), { status });
+    if (selectedRequest?.id === id) {
+      setSelectedRequest({ ...selectedRequest, status });
+    }
   };
 
   return (
     <div className="space-y-6">
-       <div className="overflow-x-auto glass rounded-3xl">
-         <table className="w-full text-left">
-           <thead>
-             <tr className="border-b border-white/5">
-                <th className="p-6 text-xs uppercase text-slate-500">Client</th>
-                <th className="p-6 text-xs uppercase text-slate-500">Service</th>
-                <th className="p-6 text-xs uppercase text-slate-500">Date</th>
-                <th className="p-6 text-xs uppercase text-slate-500">Status</th>
-                <th className="p-6 text-xs uppercase text-slate-500">Actions</th>
-             </tr>
-           </thead>
-           <tbody>
-             {requests.map(r => (
-               <tr key={r.id} className="border-b border-white/5 hover:bg-white/5">
-                 <td className="p-6">
-                    <p className="font-bold">{r.fullName}</p>
-                    <p className="text-xs text-slate-500">{r.phone}</p>
-                 </td>
-                 <td className="p-6">
-                    <span className="px-3 py-1 rounded bg-brand-blue/50 text-[10px] font-bold uppercase">{r.serviceNeeded}</span>
-                 </td>
-                 <td className="p-6 text-sm text-slate-400">
-                    {r.createdAt ? formatDate(r.createdAt.toDate()) : 'Recent'}
-                 </td>
-                 <td className="p-6">
-                    <span className={cn(
-                      "px-3 py-1 rounded-full text-[10px] font-bold uppercase",
-                      r.status === 'pending' ? 'bg-orange-500/20 text-orange-500' :
-                      r.status === 'approved' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
-                    )}>
-                      {r.status}
-                    </span>
-                 </td>
-                 <td className="p-6 flex gap-2">
-                    <button onClick={() => updateStatus(r.id, 'approved')} className="p-2 text-green-500 hover:bg-green-500/10 rounded-lg"><Check size={18} /></button>
-                    <button onClick={() => updateStatus(r.id, 'rejected')} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg"><X size={18} /></button>
-                 </td>
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+         <div className="lg:col-span-2 overflow-x-auto glass rounded-3xl h-fit">
+           <table className="w-full text-left">
+             <thead>
+               <tr className="border-b border-white/5">
+                  <th className="p-6 text-xs uppercase text-slate-500">Client</th>
+                  <th className="p-6 text-xs uppercase text-slate-500">Service</th>
+                  <th className="p-6 text-xs uppercase text-slate-500">Status</th>
+                  <th className="p-6 text-xs uppercase text-slate-500">Action</th>
                </tr>
-             ))}
-           </tbody>
-         </table>
+             </thead>
+             <tbody>
+               {requests.map(r => (
+                 <tr 
+                   key={r.id} 
+                   onClick={() => setSelectedRequest(r)}
+                   className={cn(
+                     "border-b border-white/5 cursor-pointer transition-colors",
+                     selectedRequest?.id === r.id ? "bg-brand-gold/5" : "hover:bg-white/5"
+                   )}
+                 >
+                   <td className="p-6">
+                      <p className="font-bold">{r.fullName}</p>
+                      <p className="text-xs text-slate-500">{formatDate(r.createdAt?.toDate() || new Date())}</p>
+                   </td>
+                   <td className="p-6">
+                      <span className="px-3 py-1 rounded bg-brand-blue/50 text-[10px] font-bold uppercase whitespace-nowrap">{r.serviceNeeded}</span>
+                   </td>
+                   <td className="p-6">
+                      <span className={cn(
+                        "px-3 py-1 rounded-full text-[10px] font-bold uppercase whitespace-nowrap",
+                        r.status === 'pending' ? 'bg-orange-500/20 text-orange-500' :
+                        r.status === 'approved' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+                      )}>
+                        {r.status}
+                      </span>
+                   </td>
+                   <td className="p-6">
+                      <ChevronRight size={16} className={cn("transition-transform", selectedRequest?.id === r.id && "rotate-90")} />
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
+
+         <div className="lg:col-span-1">
+           <AnimatePresence mode="wait">
+             {selectedRequest ? (
+               <motion.div
+                 key={selectedRequest.id}
+                 initial={{ opacity: 0, x: 20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: 20 }}
+                 className="glass p-8 rounded-3xl space-y-8 sticky top-10"
+               >
+                 <div className="flex justify-between items-start">
+                   <div>
+                     <h3 className="text-2xl font-bold font-heading mb-1">{selectedRequest.fullName}</h3>
+                     <p className="text-brand-gold text-xs font-bold uppercase tracking-widest">{selectedRequest.serviceNeeded}</p>
+                   </div>
+                   <div className="flex gap-2">
+                     <button onClick={() => updateStatus(selectedRequest.id, 'approved')} className="w-10 h-10 rounded-xl bg-green-500/20 text-green-500 flex items-center justify-center hover:bg-green-500 transition-colors hover:text-white"><Check size={18} /></button>
+                     <button onClick={() => updateStatus(selectedRequest.id, 'rejected')} className="w-10 h-10 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 transition-colors hover:text-white"><X size={18} /></button>
+                   </div>
+                 </div>
+
+                 <div className="grid grid-cols-1 gap-6">
+                   <DetailItem icon={Mail} label="Email" value={selectedRequest.email} />
+                   <DetailItem icon={Calendar} label="Deadline" value={selectedRequest.deadline || 'No deadline'} />
+                   <DetailItem icon={Settings} label="Location" value={selectedRequest.location} />
+                   <DetailItem icon={MessageSquare} label="Message" value={selectedRequest.description} fullWidth />
+                 </div>
+                 
+                 <div className="pt-6 border-t border-white/5">
+                   <a 
+                     href={`https://wa.me/${selectedRequest.phone?.replace(/[^0-9]/g, '')}`} 
+                     target="_blank" 
+                     rel="noreferrer"
+                     className="w-full py-4 bg-brand-gold text-brand-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white transition-all shadow-xl"
+                   >
+                     Chat on WhatsApp
+                   </a>
+                 </div>
+               </motion.div>
+             ) : (
+               <div className="glass p-12 rounded-3xl flex flex-col items-center justify-center text-center text-slate-500 space-y-4">
+                 <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                    <MessageSquare size={32} />
+                 </div>
+                 <p className="text-sm">Select a request to view details</p>
+               </div>
+             )}
+           </AnimatePresence>
+         </div>
        </div>
+    </div>
+  );
+}
+
+function DetailItem({ icon: Icon, label, value, fullWidth = false }: any) {
+  return (
+    <div className={cn("space-y-1", fullWidth ? "col-span-1" : "")}>
+      <div className="flex items-center gap-2 text-slate-500">
+        <Icon size={14} />
+        <span className="text-[10px] font-bold uppercase tracking-widest">{label}</span>
+      </div>
+      <p className="text-sm font-medium text-slate-300 break-words">{value}</p>
     </div>
   );
 }

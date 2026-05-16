@@ -14,8 +14,6 @@ const formSchema = z.object({
   email: z.string().email('Invalid email address'),
   location: z.string().min(2, 'Location is required'),
   serviceNeeded: z.string().min(1, 'Please select a service'),
-  projectType: z.string().optional(),
-  budget: z.string().optional(),
   deadline: z.string().optional(),
   description: z.string().min(10, 'Please provide more details'),
 });
@@ -23,11 +21,12 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const services_list = [
-  'Graphic Design', 'Website Development', 'Mobile Apps', 'Software Development',
-  'Branding', 'Photography', 'Videography', 'Digital Marketing', 'Printing Services'
+  'Graphic Design', 'Publishing Services', 'Printing Services', 'Album Design',
+  'ID Card Design', 'Business Card Design', 'Banner Printing', 'T-shirt Printing',
+  'Sticker Design', 'Invitation Card Design', 'Packaging Design'
 ];
 
-export function ServiceRequestForm() {
+export function ServiceRequestForm({ className }: { className?: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -45,7 +44,7 @@ export function ServiceRequestForm() {
       });
 
       // Prepare WhatsApp message
-      const whatsappMsg = `Hello Nesta Design, I am ${data.fullName}. I need ${data.serviceNeeded} service. %0A%0ADetails: ${data.description}`;
+      const whatsappMsg = `Hello Nesta Design,%0A%0A*New Service Request*%0A*Name:* ${data.fullName}%0A*Email:* ${data.email}%0A*Phone:* ${data.phone}%0A*Location:* ${data.location}%0A*Service:* ${data.serviceNeeded}%0A*Deadline:* ${data.deadline || 'N/A'}%0A%0A*Explanation:* ${data.description}`;
       window.open(`https://wa.me/250782739381?text=${whatsappMsg}`, '_blank');
 
       setIsSuccess(true);
@@ -60,16 +59,9 @@ export function ServiceRequestForm() {
   };
 
   return (
-    <section id="request" className="py-24 bg-brand-black border-y border-white/5">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-heading font-black mb-4">Request a <span className="text-brand-gold">Service</span></h2>
-          <p className="text-slate-400">Fill out the form below and we will get back to you within 24 hours.</p>
-        </div>
-
-        <div className="glass p-8 md:p-12 rounded-3xl relative overflow-hidden">
-          <AnimatePresence>
-            {isSuccess ? (
+    <div className={cn("glass p-8 md:p-12 rounded-3xl relative overflow-hidden", className)}>
+      <AnimatePresence>
+        {isSuccess ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -115,14 +107,6 @@ export function ServiceRequestForm() {
                   </select>
                 </InputGroup>
 
-                <InputGroup label="Project Type" error={errors.projectType?.message}>
-                  <input {...register('projectType')} className={inputClass} placeholder="e.g. Corporate Website" />
-                </InputGroup>
-
-                <InputGroup label="Budget Range" error={errors.budget?.message}>
-                  <input {...register('budget')} className={inputClass} placeholder="e.g. $500 - $1000" />
-                </InputGroup>
-
                 <InputGroup label="Deadline" error={errors.deadline?.message}>
                   <input {...register('deadline')} type="date" className={inputClass} />
                 </InputGroup>
@@ -150,8 +134,6 @@ export function ServiceRequestForm() {
             )}
           </AnimatePresence>
         </div>
-      </div>
-    </section>
   );
 }
 

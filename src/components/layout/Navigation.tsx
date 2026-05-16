@@ -6,8 +6,8 @@ import { cn } from '../../lib/utils';
 
 const navLinks = [
   { name: 'Home', href: '/' },
-  { name: 'About', href: '/#about' },
-  { name: 'Services', href: '/#services' },
+  { name: 'About', href: '/about' },
+  { name: 'Services', href: '/services' },
   { name: 'Gallery', href: '/gallery' },
   { name: 'Contact', href: '/#contact' },
 ];
@@ -88,7 +88,7 @@ export function Navbar() {
                 </Link>
               ))}
               <Link
-                to="/#request"
+                to="/#contact"
                 onClick={() => setIsOpen(false)}
                 className="w-full py-4 bg-brand-gold text-brand-black text-center rounded-xl font-black uppercase tracking-widest text-sm"
               >
@@ -135,7 +135,8 @@ export function Footer() {
              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mb-6">Explore</p>
              <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
                <li><Link to="/" className="text-slate-400 hover:text-brand-gold transition-colors">Home</Link></li>
-               <li><Link to="/#services" className="text-slate-400 hover:text-brand-gold transition-colors">Services</Link></li>
+               <li><Link to="/about" className="text-slate-400 hover:text-brand-gold transition-colors">About</Link></li>
+               <li><Link to="/services" className="text-slate-400 hover:text-brand-gold transition-colors">Services</Link></li>
                <li><Link to="/gallery" className="text-slate-400 hover:text-brand-gold transition-colors">Portfolio</Link></li>
                <li><Link to="/#contact" className="text-slate-400 hover:text-brand-gold transition-colors">Contact</Link></li>
              </ul>

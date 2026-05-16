@@ -28,7 +28,7 @@ export function About() {
             <div className="mb-12 glass p-8 rounded-3xl border-l-4 border-brand-gold relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               <p className="text-slate-300 text-lg leading-relaxed italic mb-8 relative z-10">
-                “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve, it is the relationships we build that will endure. I look forward to working closely with you and your team.”
+                “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure. I look forward to working closely with you and your team.”
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full border border-brand-gold overflow-hidden">

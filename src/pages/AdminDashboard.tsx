@@ -20,13 +20,17 @@ import {
   Shield,
   Mail,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  Lock,
+  Loader2,
+  UploadCloud
 } from 'lucide-react';
 import { collection, query, onSnapshot, doc, deleteDoc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, updatePassword } from 'firebase/auth';
 import { cn, formatDate } from '../lib/utils';
 import { useServices } from '../hooks/useServices';
+import { useGallery } from '../hooks/useGallery';
 
 type Tab = 'dashboard' | 'services' | 'gallery' | 'requests' | 'settings' | 'profile';
 
@@ -388,55 +392,198 @@ function DetailItem({ icon: Icon, label, value, fullWidth = false }: any) {
 }
 
 function GalleryManager() {
-  const [items, setItems] = useState<any[]>([]);
+  const { items } = useGallery();
   const [showAdd, setShowAdd] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [newItem, setNewItem] = useState({ title: '', imageUrl: '', category: 'Branding' });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  useEffect(() => {
-    const q = query(collection(db, 'gallery'), orderBy('uploadedAt', 'desc'));
-    return onSnapshot(q, (sn) => setItems(sn.docs.map(d => ({ id: d.id, ...d.data() }))));
-  }, []);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new Image();
+        img.onload = () => {
+          // Calculate new dimensions to stay under ~800KB
+          // We aim for roughly 1200px max dimension which is plenty for web gallery
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to webp/jpeg with 0.7 quality to ensure it fits in Firestore 1MB limit
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          setImagePreview(resizedDataUrl);
+          setNewItem({ ...newItem, imageUrl: resizedDataUrl });
+        };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addDoc(collection(db, 'gallery'), {
-      ...newItem,
-      uploadedAt: serverTimestamp()
-    });
-    setNewItem({ title: '', imageUrl: '', category: 'Branding' });
-    setShowAdd(false);
+    if (!newItem.imageUrl) {
+      alert('Please select or provide an image URL');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'gallery'), {
+        ...newItem,
+        uploadedAt: serverTimestamp()
+      });
+      setNewItem({ title: '', imageUrl: '', category: 'Branding' });
+      setImagePreview(null);
+      setShowAdd(false);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save to gallery');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">Manage Gallery</h2>
-        <button onClick={() => setShowAdd(!showAdd)} className="px-4 py-2 bg-brand-gold text-brand-black rounded-lg font-bold flex items-center gap-2">
+        <h2 className="text-xl font-bold text-white">Manage Gallery</h2>
+        <button 
+          onClick={() => setShowAdd(!showAdd)} 
+          className="px-6 py-3 bg-brand-gold text-brand-black rounded-xl font-bold flex items-center gap-2 hover:bg-white transition-all shadow-lg"
+        >
            {showAdd ? <X size={18} /> : <Plus size={18} />}
-           {showAdd ? 'Cancel' : 'Upload Image'}
+           {showAdd ? 'Cancel' : 'Add New Item'}
         </button>
       </div>
 
-      {showAdd && (
-        <form onSubmit={handleAdd} className="glass p-6 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-4">
-           <input className="bg-white/5 border border-white/10 rounded-lg p-3" placeholder="Image Title" value={newItem.title} onChange={e => setNewItem({...newItem, title: e.target.value})} required />
-           <input className="bg-white/5 border border-white/10 rounded-lg p-3" placeholder="Image URL" value={newItem.imageUrl} onChange={e => setNewItem({...newItem, imageUrl: e.target.value})} required />
-           <select className="bg-white/5 border border-white/10 rounded-lg p-3 md:col-span-2" value={newItem.category} onChange={e => setNewItem({...newItem, category: e.target.value})}>
-             <option value="Branding">Branding</option>
-             <option value="Photography">Photography</option>
-             <option value="Graphic Design">Graphic Design</option>
-             <option value="Web Design">Web Design</option>
-           </select>
-           <button type="submit" className="md:col-span-2 py-3 bg-brand-gold text-brand-black rounded-lg font-bold">Save to Gallery</button>
-        </form>
-      )}
+      <AnimatePresence>
+        {showAdd && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <form onSubmit={handleAdd} className="glass p-8 rounded-3xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 border border-white/10 shadow-2xl relative">
+               <div className="space-y-6">
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Image Title</label>
+                   <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:border-brand-gold outline-none transition-all" 
+                    placeholder="Enter item title..." 
+                    value={newItem.title} 
+                    onChange={e => setNewItem({...newItem, title: e.target.value})} 
+                    required 
+                   />
+                 </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Category</label>
+                   <select 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:border-brand-gold outline-none transition-all appearance-none" 
+                    value={newItem.category} 
+                    onChange={e => setNewItem({...newItem, category: e.target.value})}
+                   >
+                     <option value="Branding">Branding</option>
+                     <option value="Photography">Photography</option>
+                     <option value="Graphic Design">Graphic Design</option>
+                     <option value="Web Design">Web Design</option>
+                     <option value="Advertising">Advertising</option>
+                   </select>
+                 </div>
+
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-2 block">Upload Photo</label>
+                   <div className="relative group">
+                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-brand-gold transition-all bg-white/5 hover:bg-white/10">
+                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                         <UploadCloud size={32} className="text-slate-500 mb-2 group-hover:text-brand-gold transition-colors" />
+                         <p className="text-xs text-slate-500 font-bold uppercase tracking-widest group-hover:text-white transition-colors">Click to upload</p>
+                       </div>
+                       <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                     </label>
+                   </div>
+                   <p className="text-[10px] text-slate-600 italic mt-2">Max size: 800KB (for best performance)</p>
+                 </div>
+                 
+                 <div className="pt-4">
+                   <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full py-4 bg-brand-gold text-brand-black rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white transition-all disabled:opacity-50 shadow-xl"
+                   >
+                    {loading && <Loader2 size={20} className="animate-spin" />}
+                    {loading ? 'Saving...' : 'Save to Gallery'}
+                   </button>
+                 </div>
+               </div>
+
+               <div className="space-y-4">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center block">Preview</label>
+                  <div className="aspect-square rounded-2xl overflow-hidden glass border border-white/5 flex items-center justify-center p-2">
+                    {imagePreview ? (
+                      <img src={imagePreview} className="w-full h-full object-cover rounded-xl" alt="Preview" />
+                    ) : (
+                      <div className="text-center text-slate-600 italic text-sm">
+                        <ImageIcon size={48} className="mx-auto mb-4 opacity-10" />
+                        No image selected
+                      </div>
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <button 
+                      type="button"
+                      onClick={() => { setImagePreview(null); setNewItem({...newItem, imageUrl: ''}); }}
+                      className="w-full text-xs font-bold text-red-500/50 hover:text-red-500 tracking-widest uppercase transition-colors"
+                    >
+                      Clear Selection
+                    </button>
+                  )}
+               </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-6">
         {items.map(item => (
-          <div key={item.id} className="relative group aspect-square rounded-xl overflow-hidden glass">
-            <img src={item.imageUrl} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <button onClick={() => deleteDoc(doc(db, 'gallery', item.id))} className="text-red-500"><Trash2 size={24} /></button>
+          <div key={item.id} className="relative group aspect-square rounded-2xl overflow-hidden glass border border-white/5">
+            <img src={item.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-center">
+              <p className="text-[10px] font-bold text-brand-gold uppercase tracking-tighter mb-1">{item.category}</p>
+              <h4 className="text-xs font-bold text-white mb-4 line-clamp-2">{item.title}</h4>
+              <button 
+                onClick={() => {
+                  if(confirm('Delete from gallery?')) {
+                    deleteDoc(doc(db, 'gallery', item.id));
+                  }
+                }} 
+                className="w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
+              >
+                <Trash2 size={20} />
+              </button>
             </div>
           </div>
         ))}
@@ -447,6 +594,45 @@ function GalleryManager() {
 
 function AdminProfile() {
   const { user } = useAuth();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passLoading, setPassLoading] = useState(false);
+  const [passError, setPassError] = useState('');
+  const [passSuccess, setPassSuccess] = useState('');
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setPassError('Passwords do not match');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPassError('Password must be at least 6 characters');
+      return;
+    }
+
+    setPassLoading(true);
+    setPassError('');
+    setPassSuccess('');
+
+    try {
+      if (auth.currentUser) {
+        await updatePassword(auth.currentUser, newPassword);
+        setPassSuccess('Password updated successfully!');
+        setNewPassword('');
+        setConfirmPassword('');
+      }
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === 'auth/requires-recent-login') {
+        setPassError('Please log out and log back in to change your password for security reasons.');
+      } else {
+        setPassError(err.message || 'Failed to update password');
+      }
+    } finally {
+      setPassLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -500,7 +686,51 @@ function AdminProfile() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="glass p-8 rounded-3xl space-y-6">
           <div className="flex items-center justify-between border-b border-white/5 pb-4">
-            <h3 className="font-bold text-lg">Account Security</h3>
+            <h3 className="font-bold text-lg text-white">Update Password</h3>
+            <Lock size={20} className="text-brand-gold" />
+          </div>
+          
+          <form onSubmit={handlePasswordChange} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">New Password</label>
+              <input 
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:border-brand-gold outline-none"
+                placeholder="Minimum 6 characters"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Confirm Password</label>
+              <input 
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:border-brand-gold outline-none"
+                placeholder="Repeat new password"
+                required
+              />
+            </div>
+
+            {passError && <p className="text-red-500 text-xs">{passError}</p>}
+            {passSuccess && <p className="text-green-500 text-xs">{passSuccess}</p>}
+
+            <button 
+              type="submit"
+              disabled={passLoading}
+              className="w-full py-3 bg-brand-gold text-brand-black rounded-xl font-bold text-sm hover:bg-white transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {passLoading && <Loader2 size={16} className="animate-spin" />}
+              {passLoading ? 'Updating...' : 'Change Password'}
+            </button>
+          </form>
+        </div>
+
+        <div className="glass p-8 rounded-3xl space-y-6">
+          <div className="flex items-center justify-between border-b border-white/5 pb-4">
+            <h3 className="font-bold text-lg text-white">Account Security</h3>
             <Shield size={20} className="text-brand-gold" />
           </div>
           <div className="space-y-4">
@@ -519,19 +749,11 @@ function AdminProfile() {
               bgColor="bg-blue-500/10"
             />
           </div>
-        </div>
-
-        <div className="glass p-8 rounded-3xl flex flex-col items-center justify-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-brand-gold">
-             <Bell size={32} />
-          </div>
-          <h3 className="font-bold text-lg text-white">Console Overview</h3>
-          <p className="text-slate-400 text-sm italic leading-relaxed">
-            "Your administrative console is synchronized with the latest security protocols."
-          </p>
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-500 rounded-full text-[10px] font-black uppercase tracking-widest">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            System Online
+          <div className="pt-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-500 rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              System Online
+            </div>
           </div>
         </div>
       </div>

@@ -40,8 +40,8 @@ export function LoginPage() {
         className="max-w-md w-full glass p-10 rounded-3xl"
       >
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-brand-gold rounded-2xl flex items-center justify-center text-brand-black mx-auto mb-6">
-            <Lock size={32} />
+          <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 p-1 border border-white/10">
+            <img src="/profile.png" alt="Nesta Design" className="w-full h-full object-cover rounded-2xl" />
           </div>
           <h1 className="text-3xl font-heading font-black mb-2">Admin Login</h1>
           <p className="text-slate-500 text-sm">Access the Nesta Design dashboard</p>
@@ -57,10 +57,11 @@ export function LoginPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-gold"
-                placeholder="078..."
+                placeholder="0782739381"
                 required
               />
             </div>
+            <p className="text-[10px] text-slate-500 px-2 italic">Try: 0782739381</p>
           </div>
 
           <div className="space-y-2">
@@ -76,6 +77,7 @@ export function LoginPage() {
                 required
               />
             </div>
+            <p className="text-[10px] text-slate-500 px-2 italic">Default: nester11</p>
           </div>
 
           {error && <p className="text-red-500 text-xs text-center">{error}</p>}

@@ -6,6 +6,8 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, E
 import { cn } from '../lib/utils';
 import { AnimatePresence } from 'framer-motion';
 
+import { SOCIAL_LINKS } from '../constants';
+
 export function HomePage() {
   return (
     <main className="relative">
@@ -152,13 +154,15 @@ function ContactTabs() {
               <div className="pt-8">
                 <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>
                 <div className="flex flex-wrap gap-4">
-                  {['Facebook', 'Instagram', 'Twitter', 'Linkedin', 'Youtube'].map((social) => (
+                  {Object.entries(SOCIAL_LINKS).map(([name, url]) => (
                     <a
-                      key={social}
-                      href="#"
+                      key={name}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="px-6 py-3 glass rounded-xl text-sm font-medium hover:bg-brand-gold hover:text-brand-black transition-all flex items-center gap-2"
                     >
-                      {social} <ExternalLink size={14} />
+                      {name} <ExternalLink size={14} />
                     </a>
                   ))}
                 </div>

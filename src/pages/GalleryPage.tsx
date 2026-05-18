@@ -1,31 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { Maximize2, Share2, X } from 'lucide-react';
-
-interface GalleryItem {
-  id: string;
-  title: string;
-  imageUrl: string;
-  category: string;
-}
+import { useGallery, GalleryItem } from '../hooks/useGallery';
 
 export function GalleryPage() {
-  const [items, setItems] = useState<GalleryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading } = useGallery();
   const [filter, setFilter] = useState('All');
   const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
-
-  useEffect(() => {
-    const q = query(collection(db, 'gallery'), orderBy('uploadedAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as GalleryItem[];
-      setItems(data);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
 
   const categories = ['All', ...Array.from(new Set(items.map(item => item.category)))];
   const filteredItems = filter === 'All' ? items : items.filter(item => item.category === filter);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, MessageCircle } from 'lucide-react';
+import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, MessageCircle, Music2 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 
@@ -11,6 +11,8 @@ const navLinks = [
   { name: 'Gallery', href: '/gallery' },
   { name: 'Contact', href: '/#contact' },
 ];
+
+import { SOCIAL_LINKS } from '../../constants';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,10 +35,8 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-tr from-amber-600 to-yellow-200 rounded-lg flex items-center justify-center font-black text-brand-black text-xl shadow-lg shadow-amber-500/20">
-            N
-          </div>
+        <Link to="/" className="flex items-center gap-3">
+          <img src="/profile.png" alt="Nesta Design" className="w-10 h-10 rounded-lg object-cover" />
           <span className="font-heading font-bold text-2xl tracking-tighter uppercase whitespace-nowrap">
             NESTA<span className="text-brand-gold">DESIGN</span>
           </span>
@@ -111,10 +111,8 @@ export function Footer() {
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 px-6 lg:px-0">
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-brand-gold rounded flex items-center justify-center font-bold text-brand-black">
-                N
-              </div>
+            <Link to="/" className="flex items-center gap-3">
+              <img src="/profile.png" alt="Nesta Design" className="w-8 h-8 rounded object-cover" />
               <span className="font-heading font-bold text-xl uppercase tracking-tighter">
                 NESTA<span className="text-brand-gold">DESIGN</span>
               </span>
@@ -123,11 +121,12 @@ export function Footer() {
               Crafting digital excellence in Kigali since 2020. Our mission is to be the ICT company of choice by providing quality service and timely solutions.
             </p>
             <div className="flex gap-4">
-              <SocialIcon icon={Facebook} />
-              <SocialIcon icon={Instagram} />
-              <SocialIcon icon={Twitter} />
-              <SocialIcon icon={Linkedin} />
-              <SocialIcon icon={Youtube} />
+              <SocialIcon icon={Facebook} href={SOCIAL_LINKS.Facebook} />
+              <SocialIcon icon={Instagram} href={SOCIAL_LINKS.Instagram} />
+              <SocialIcon icon={Twitter} href={SOCIAL_LINKS.Twitter} />
+              <SocialIcon icon={Linkedin} href={SOCIAL_LINKS.Linkedin} />
+              <SocialIcon icon={Youtube} href={SOCIAL_LINKS.Youtube} />
+              <SocialIcon icon={Music2} href={SOCIAL_LINKS.Tiktok} />
             </div>
           </div>
 
@@ -184,10 +183,12 @@ function FooterInfo({ label, value }: { label: string, value: string }) {
   );
 }
 
-function SocialIcon({ icon: Icon }: { icon: any }) {
+function SocialIcon({ icon: Icon, href }: { icon: any, href: string }) {
   return (
     <a
-      href="#"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand-gold hover:text-brand-black transition-all duration-300"
     >
       <Icon size={16} />

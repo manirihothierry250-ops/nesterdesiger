@@ -1,54 +1,31 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Phone, ArrowRight, Loader2, Mail } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export function LoginPage() {
-  const [identifier, setIdentifier] = useState(''); // Email or Phone
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    // Mapping logic
-    let email = identifier;
-    if (!identifier.includes('@')) {
-      if (identifier === '0782739381') {
-        email = 'jeanesta81@gmail.com';
-      } else if (identifier === '078...' /* Add other mappings if needed */) {
-        email = 'manirihothierry8@gmail.com';
-      } else {
-        email = `${identifier}@nesta.com`;
-      }
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/admin');
-    } catch (err: any) {
-      console.error(err);
-      setError('Invalid credentials or admin access not enabled.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     setError('');
     const provider = new GoogleAuthProvider();
+    const authorizedEmails = ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com'];
     
     try {
-      await signInWithPopup(auth, provider);
-      navigate('/admin');
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      if (user.email && authorizedEmails.includes(user.email)) {
+        navigate('/admin');
+      } else {
+        await auth.signOut();
+        setError('Access denied. This email is not authorized for admin access.');
+      }
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/popup-blocked') {
@@ -72,20 +49,20 @@ export function LoginPage() {
           <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 p-1 border border-white/10">
             <img src="/profile.png" alt="Nesta Design" className="w-full h-full object-cover rounded-2xl" />
           </div>
-          <h1 className="text-3xl font-heading font-black mb-2">Admin Login</h1>
-          <p className="text-slate-500 text-sm">Access the Nesta Design dashboard</p>
+          <h1 className="text-3xl font-heading font-black mb-2">Admin Access</h1>
+          <p className="text-slate-500 text-sm">Sign in to manage Nesta Design</p>
         </div>
 
-        <div className="space-y-4 mb-8">
+        <div className="space-y-6">
           <button
             onClick={handleGoogleLogin}
-            disabled={googleLoading || loading}
-            className="w-full py-4 bg-white text-black rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all disabled:opacity-50"
+            disabled={googleLoading}
+            className="w-full py-5 bg-white text-black rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-slate-100 transition-all shadow-xl disabled:opacity-50"
           >
             {googleLoading ? (
-              <Loader2 size={20} className="animate-spin" />
+              <Loader2 size={24} className="animate-spin text-brand-gold" />
             ) : (
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -104,65 +81,32 @@ export function LoginPage() {
                 />
               </svg>
             )}
-            Sign in with Google
+            <span className="text-lg">Continue with Google</span>
           </button>
 
-          <div className="relative flex items-center gap-4 py-2">
-            <div className="flex-1 h-px bg-white/10"></div>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Or email/phone</span>
-            <div className="flex-1 h-px bg-white/10"></div>
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl text-xs text-center font-bold uppercase tracking-widest"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          <div className="pt-4 text-center">
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-4">Authorized Emails Only</p>
+            <div className="flex flex-col gap-2">
+              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">jeanesta81@gmail.com</span>
+              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">manirihothierry8@gmail.com</span>
+            </div>
           </div>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Email or Phone</label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
-                {identifier.includes('@') ? <Mail size={18} /> : <Phone size={18} />}
-              </span>
-              <input
-                type="text"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-gold"
-                placeholder="Email or Phone"
-                required
-              />
-            </div>
-            <p className="text-[10px] text-slate-500 px-2 italic">Try: jeanesta81@gmail.com</p>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-gold"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            <p className="text-[10px] text-slate-500 px-2 italic">Default: nester11</p>
-          </div>
-
-          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading || googleLoading}
-            className="w-full py-4 bg-brand-gold text-brand-black rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-white transition-all disabled:opacity-50"
-          >
-            {loading ? <Loader2 className="animate-spin" /> : <ArrowRight size={20} />}
-            {loading ? 'Authenticating...' : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="mt-8 text-center text-slate-600 text-xs leading-relaxed">
-          <p>Admin access is restricted. Authorized personnel only.</p>
+        <div className="mt-12 pt-8 border-t border-white/5 text-center">
+          <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic">
+            "Your administrative console is synchronized with the latest security protocols."
+          </p>
         </div>
       </motion.div>
     </div>

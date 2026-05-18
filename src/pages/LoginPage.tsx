@@ -3,10 +3,10 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Phone, ArrowRight, Loader2 } from 'lucide-react';
+import { Lock, Phone, ArrowRight, Loader2, Mail } from 'lucide-react';
 
 export function LoginPage() {
-  const [phone, setPhone] = useState(''); // Prompt used phone, but Firebase uses email. I'll map it.
+  const [identifier, setIdentifier] = useState(''); // Email or Phone
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,16 +17,24 @@ export function LoginPage() {
     setLoading(true);
     setError('');
 
-    // Mapping the provided phone to the provided email in prompt
-    // Phone: 0782739381 -> Email: jeanesta81@gmail.com
-    const email = phone === '0782739381' ? 'jeanesta81@gmail.com' : `${phone}@nesta.com`;
+    // Mapping logic
+    let email = identifier;
+    if (!identifier.includes('@')) {
+      if (identifier === '0782739381') {
+        email = 'jeanesta81@gmail.com';
+      } else if (identifier === '078...' /* Add other mappings if needed */) {
+        email = 'manirihothierry8@gmail.com';
+      } else {
+        email = `${identifier}@nesta.com`;
+      }
+    }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/admin');
     } catch (err: any) {
       console.error(err);
-      setError('Invalid credentials or admin access not enabled in Firebase Console.');
+      setError('Invalid credentials or admin access not enabled.');
     } finally {
       setLoading(false);
     }
@@ -49,19 +57,21 @@ export function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Phone Number</label>
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest px-2">Email or Phone</label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
+                {identifier.includes('@') ? <Mail size={18} /> : <Phone size={18} />}
+              </span>
               <input
                 type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 focus:outline-none focus:border-brand-gold"
-                placeholder="0782739381"
+                placeholder="Email or Phone"
                 required
               />
             </div>
-            <p className="text-[10px] text-slate-500 px-2 italic">Try: 0782739381</p>
+            <p className="text-[10px] text-slate-500 px-2 italic">Try: jeanesta81@gmail.com</p>
           </div>
 
           <div className="space-y-2">

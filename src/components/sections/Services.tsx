@@ -135,7 +135,7 @@ function ServiceCard({ service, index, onApply }: { service: any, index: number,
     >
       <div className="aspect-video relative overflow-hidden">
         <img 
-          src={service.image || "https://picsum.photos/seed/nesta/800/600"} 
+          src={service.imageUrl || service.image || "https://picsum.photos/seed/nesta/800/600"} 
           alt={service.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           referrerPolicy="no-referrer"

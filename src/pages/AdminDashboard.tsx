@@ -177,17 +177,73 @@ function StatCard({ label, value, trend }: any) {
 function ServicesManager() {
   const { services } = useServices();
   const [showAdd, setShowAdd] = useState(false);
-  const [newService, setNewService] = useState({ title: '', description: '', icon: 'Briefcase' });
+  const [loading, setLoading] = useState(false);
+  const [newService, setNewService] = useState({ title: '', description: '', icon: 'Briefcase', imageUrl: '' });
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          setImagePreview(resizedDataUrl);
+          setNewService({ ...newService, imageUrl: resizedDataUrl });
+        };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addDoc(collection(db, 'services'), {
-      ...newService,
-      active: true,
-      createdAt: serverTimestamp()
-    });
-    setNewService({ title: '', description: '', icon: 'Briefcase' });
-    setShowAdd(false);
+    if (!newService.imageUrl) {
+      alert('Please upload a service cover image');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await addDoc(collection(db, 'services'), {
+        ...newService,
+        active: true,
+        createdAt: serverTimestamp()
+      });
+      setNewService({ title: '', description: '', icon: 'Briefcase', imageUrl: '' });
+      setImagePreview(null);
+      setShowAdd(false);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add service');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -218,35 +274,73 @@ function ServicesManager() {
             onSubmit={handleAdd}
             className="glass p-6 rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden"
           >
-            <input
-              className="bg-white/5 border border-white/10 rounded-lg p-3"
-              placeholder="Service Title"
-              value={newService.title}
-              onChange={e => setNewService({...newService, title: e.target.value})}
-              required
-            />
-             <select
-              className="bg-white/5 border border-white/10 rounded-lg p-3"
-              value={newService.icon}
-              onChange={e => setNewService({...newService, icon: e.target.value})}
+            <div className="space-y-4">
+              <input
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-brand-gold"
+                placeholder="Service Title"
+                value={newService.title}
+                onChange={e => setNewService({...newService, title: e.target.value})}
+                required
+              />
+              <select
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-brand-gold appearance-none text-slate-300"
+                value={newService.icon}
+                onChange={e => setNewService({...newService, icon: e.target.value})}
+              >
+                <option value="Briefcase">Briefcase (Default)</option>
+                <option value="Palette">Palette</option>
+                <option value="Globe">Globe</option>
+                <option value="Smartphone">Smartphone</option>
+                <option value="Camera">Camera</option>
+                <option value="Video">Video</option>
+                <option value="Stamp">Stamp</option>
+                <option value="Shirt">Shirt</option>
+                <option value="Box">Packaging</option>
+              </select>
+              <textarea
+                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-brand-gold"
+                placeholder="Description"
+                rows={4}
+                value={newService.description}
+                onChange={e => setNewService({...newService, description: e.target.value})}
+                required
+              />
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block text-center">Service Cover Image</label>
+              <div className="aspect-video relative rounded-xl overflow-hidden glass border border-white/10 flex items-center justify-center group">
+                {imagePreview ? (
+                  <img src={imagePreview} className="w-full h-full object-cover" alt="Preview" />
+                ) : (
+                  <div className="text-center text-slate-500 italic text-xs">
+                    <UploadCloud size={32} className="mx-auto mb-2 opacity-20" />
+                    No image selected
+                  </div>
+                )}
+                <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                   <span className="text-[10px] font-black uppercase text-white tracking-widest">Select Image</span>
+                   <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                </label>
+              </div>
+              {imagePreview && (
+                <button 
+                  type="button"
+                  onClick={() => { setImagePreview(null); setNewService({...newService, imageUrl: ''}); }}
+                  className="w-full text-[10px] font-bold text-red-500/50 hover:text-red-500 tracking-widest uppercase transition-colors"
+                >
+                  Clear Selection
+                </button>
+              )}
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="md:col-span-2 py-4 bg-brand-gold text-brand-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white transition-all disabled:opacity-50 mt-2"
             >
-              <option value="Briefcase">Briefcase (Default)</option>
-              <option value="Palette">Palette</option>
-              <option value="Globe">Globe</option>
-              <option value="Smartphone">Smartphone</option>
-              <option value="Camera">Camera</option>
-              <option value="Video">Video</option>
-            </select>
-            <textarea
-              className="bg-white/5 border border-white/10 rounded-lg p-3 md:col-span-2"
-              placeholder="Description"
-              rows={3}
-              value={newService.description}
-              onChange={e => setNewService({...newService, description: e.target.value})}
-              required
-            />
-            <button type="submit" className="md:col-span-2 py-3 bg-brand-gold text-brand-black rounded-lg font-bold">
-              Save Service
+              {loading && <Loader2 size={20} className="animate-spin" />}
+              {loading ? 'Adding Service...' : 'Save Service'}
             </button>
           </motion.form>
         )}
@@ -254,14 +348,17 @@ function ServicesManager() {
 
       <div className="grid grid-cols-1 gap-4">
         {services.map(s => (
-          <div key={s.id} className="glass p-6 rounded-2xl flex items-center justify-between">
-            <div>
-              <h4 className="font-bold">{s.title}</h4>
-              <p className="text-xs text-slate-500">{s.description.substring(0, 80)}...</p>
+          <div key={s.id} className="glass p-4 rounded-2xl flex items-center gap-6 group hover:border-white/20 transition-all">
+            <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 glass border border-white/5">
+              <img src={s.imageUrl} className="w-full h-full object-cover" alt={s.title} referrerPolicy="no-referrer" />
             </div>
-            <div className="flex gap-2">
-              <button className="p-2 hover:text-brand-gold"><Edit2 size={18} /></button>
-              <button onClick={() => handleDelete(s.id)} className="p-2 hover:text-red-500"><Trash2 size={18} /></button>
+            <div className="flex-1">
+              <h4 className="font-bold text-white">{s.title}</h4>
+              <p className="text-xs text-slate-500 line-clamp-2">{s.description}</p>
+            </div>
+            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="p-2 hover:text-brand-gold transition-colors"><Edit2 size={18} /></button>
+              <button onClick={() => handleDelete(s.id)} className="p-2 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
             </div>
           </div>
         ))}

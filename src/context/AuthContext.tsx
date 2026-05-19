@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const hardcodedAdmins = ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com'];
+        const hardcodedAdmins = ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com', 'manirihothierry250@gmail.com'];
         const isHardcodedAdmin = user.email && hardcodedAdmins.includes(user.email);
         
         if (isHardcodedAdmin) {

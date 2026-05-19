@@ -12,7 +12,7 @@ service cloud.firestore {
     function isAdmin() { 
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
-        (request.auth.token.email in ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com'] && request.auth.token.email_verified == true)
+        (request.auth.token.email in ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com', 'manirihothierry250@gmail.com'] && request.auth.token.email_verified == true)
       ); 
     }
     function incoming() { return request.resource.data; }
@@ -27,7 +27,9 @@ service cloud.firestore {
     }
 
     function isValidGalleryItem(data) {
-      return data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+      return data.imageUrl is string && data.imageUrl.size() <= 1048576 &&
+             data.title is string &&
+             data.category is string &&
              data.uploadedAt is timestamp;
     }
 

@@ -14,7 +14,7 @@ export function LoginPage() {
     setGoogleLoading(true);
     setError('');
     const provider = new GoogleAuthProvider();
-    const authorizedEmails = ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com'];
+    const authorizedEmails = ['jeanesta81@gmail.com', 'manirihothierry8@gmail.com', 'manirihothierry250@gmail.com'];
     
     try {
       const result = await signInWithPopup(auth, provider);
@@ -99,6 +99,7 @@ export function LoginPage() {
             <div className="flex flex-col gap-2">
               <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">jeanesta81@gmail.com</span>
               <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">manirihothierry8@gmail.com</span>
+              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">manirihothierry250@gmail.com</span>
             </div>
           </div>
         </div>

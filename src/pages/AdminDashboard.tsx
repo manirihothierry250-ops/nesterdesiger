@@ -146,11 +146,20 @@ function SidebarLink({ icon: Icon, label, active, onClick }: { icon: any, label:
 }
 
 function StatsOverview() {
+  const [requestCount, setRequestCount] = useState(0);
+  const { services } = useServices();
+  const { items: galleryItems } = useGallery();
+
+  useEffect(() => {
+    const q = query(collection(db, 'requests'));
+    return onSnapshot(q, (sn) => setRequestCount(sn.size));
+  }, []);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <StatCard label="Total Requests" value="48" trend="+12% this month" />
-      <StatCard label="Active Services" value="14" trend="Live on site" />
-      <StatCard label="Gallery Assets" value="126" trend="High res stored" />
+      <StatCard label="Total Requests" value={requestCount.toString()} trend="+New Leads" />
+      <StatCard label="Active Services" value={services.length.toString()} trend="Live on site" />
+      <StatCard label="Gallery Assets" value={galleryItems.length.toString()} trend="Portfolio items" />
     </div>
   );
 }

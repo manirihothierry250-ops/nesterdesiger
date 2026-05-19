@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Palette, Globe, Smartphone, Monitor, Briefcase, Camera, Video, Printer, Send, Search, Layout, Image as ImageIcon, Contact, CreditCard, Maximize, Shirt, Stamp, Mail, Box } from 'lucide-react';
 import { useServices } from '../../hooks/useServices';
 import { cn } from '../../lib/utils';
+import { ServiceApplicationModal } from './ServiceApplicationModal';
 
 const iconMap: Record<string, any> = {
   Palette, Globe, Smartphone, Monitor, Briefcase, Camera, Video, Printer, Send, Search, Layout, ImageIcon, Contact, CreditCard, Maximize, Shirt, Stamp, Mail, Box
@@ -78,8 +79,9 @@ const defaultServices = [
 ];
 
 export function Services() {
-  const { services, loading } = useServices();
+  const { services, loading: servicesLoading } = useServices();
   const displayServices = services.length > 0 ? services : defaultServices;
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
   return (
     <section id="services" className="py-24 bg-brand-black relative overflow-hidden">
@@ -99,15 +101,26 @@ export function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {displayServices.map((service, index) => (
-            <ServiceCard key={service.title} service={service} index={index} />
+            <ServiceCard 
+              key={service.title} 
+              service={service} 
+              index={index} 
+              onApply={() => setSelectedService(service.title)}
+            />
           ))}
         </div>
       </div>
+
+      <ServiceApplicationModal 
+        isOpen={!!selectedService}
+        onClose={() => setSelectedService(null)}
+        serviceTitle={selectedService || ''}
+      />
     </section>
   );
 }
 
-function ServiceCard({ service, index }: { service: any, index: number }) {
+function ServiceCard({ service, index, onApply }: { service: any, index: number, onApply: () => void }) {
   const Icon = iconMap[service.icon] || Briefcase;
 
   return (
@@ -117,7 +130,8 @@ function ServiceCard({ service, index }: { service: any, index: number }) {
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ y: -10 }}
-      className="glass rounded-2xl overflow-hidden group transition-all duration-300 hover:border-brand-gold/30"
+      onClick={onApply}
+      className="glass rounded-2xl overflow-hidden group transition-all duration-300 hover:border-brand-gold/30 cursor-pointer"
     >
       <div className="aspect-video relative overflow-hidden">
         <img 
@@ -137,8 +151,11 @@ function ServiceCard({ service, index }: { service: any, index: number }) {
         <p className="text-slate-400 text-sm leading-relaxed mb-6">
           {service.description}
         </p>
-        <div className="flex items-center gap-2 text-brand-gold font-bold text-xs uppercase tracking-widest cursor-pointer group-hover:gap-3 transition-all">
-          Learn More <Search size={14} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-brand-gold font-bold text-xs uppercase tracking-widest group-hover:gap-3 transition-all">
+            Apply Now <Send size={14} />
+          </div>
+          <Search size={14} className="text-slate-600 group-hover:text-brand-gold transition-colors" />
         </div>
       </div>
     </motion.div>

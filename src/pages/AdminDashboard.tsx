@@ -23,7 +23,8 @@ import {
   ChevronRight,
   Lock,
   Loader2,
-  UploadCloud
+  UploadCloud,
+  BookOpen
 } from 'lucide-react';
 import { collection, query, onSnapshot, doc, deleteDoc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
@@ -31,8 +32,56 @@ import { signOut, updatePassword } from 'firebase/auth';
 import { cn, formatDate } from '../lib/utils';
 import { useServices } from '../hooks/useServices';
 import { useGallery } from '../hooks/useGallery';
+import { BooksManager } from '../components/BooksManager';
 
-type Tab = 'dashboard' | 'services' | 'gallery' | 'requests' | 'settings' | 'profile';
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+export interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  }
+}
+
+export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData?.map(provider => ({
+        providerId: provider.providerId,
+        email: provider.email,
+      })) || []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
+type Tab = 'dashboard' | 'services' | 'gallery' | 'books' | 'requests' | 'settings' | 'profile';
 
 export function AdminDashboard() {
   const { user, isAdmin, loading } = useAuth();
@@ -61,6 +110,7 @@ export function AdminDashboard() {
           <SidebarLink icon={LayoutDashboard} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
           <SidebarLink icon={Briefcase} label="Services" active={activeTab === 'services'} onClick={() => setActiveTab('services')} />
           <SidebarLink icon={ImageIcon} label="Gallery" active={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')} />
+          <SidebarLink icon={BookOpen} label="Books" active={activeTab === 'books'} onClick={() => setActiveTab('books')} />
           <SidebarLink icon={MessageSquare} label="Requests" active={activeTab === 'requests'} onClick={() => setActiveTab('requests')} />
           <SidebarLink icon={UserIcon} label="Profile" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
           <SidebarLink icon={Settings} label="Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
@@ -121,6 +171,7 @@ export function AdminDashboard() {
             {activeTab === 'services' && <ServicesManager />}
             {activeTab === 'requests' && <RequestsManager />}
             {activeTab === 'gallery' && <GalleryManager />}
+            {activeTab === 'books' && <BooksManager />}
             {activeTab === 'profile' && <AdminProfile />}
             {activeTab === 'settings' && <div className="text-slate-500">Settings panel coming soon...</div>}
           </motion.div>
@@ -238,17 +289,29 @@ function ServicesManager() {
       setNewService({ title: '', description: '', icon: 'Briefcase', imageUrl: '' });
       setImagePreview(null);
       setShowAdd(false);
+      alert('Service added successfully.');
     } catch (err) {
       console.error(err);
       alert('Failed to add service');
+      handleFirestoreError(err, OperationType.CREATE, 'services');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this service?')) {
-      await deleteDoc(doc(db, 'services', id));
+    if (confirm('Are you absolutely sure you want to delete this service? This action is permanent and cannot be undone.')) {
+      setLoading(true);
+      try {
+        await deleteDoc(doc(db, 'services', id));
+        alert('Service deleted successfully.');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete service. Make sure you are authorized.');
+        handleFirestoreError(err, OperationType.DELETE, `services/${id}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -563,11 +626,29 @@ function GalleryManager() {
       setNewItem({ title: '', imageUrl: '', category: 'Branding' });
       setImagePreview(null);
       setShowAdd(false);
+      alert('Item added to gallery successfully.');
     } catch (err) {
       console.error(err);
       alert('Failed to save to gallery');
+      handleFirestoreError(err, OperationType.CREATE, 'gallery');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you absolutely sure you want to delete this post/item from the gallery? This action is permanent and cannot be undone.')) {
+      setLoading(true);
+      try {
+        await deleteDoc(doc(db, 'gallery', id));
+        alert('Gallery item deleted successfully.');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete gallery item. Make sure you are authorized.');
+        handleFirestoreError(err, OperationType.DELETE, `gallery/${id}`);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -681,14 +762,11 @@ function GalleryManager() {
               <p className="text-[10px] font-bold text-brand-gold uppercase tracking-tighter mb-1">{item.category}</p>
               <h4 className="text-xs font-bold text-white mb-4 line-clamp-2">{item.title}</h4>
               <button 
-                onClick={() => {
-                  if(confirm('Delete from gallery?')) {
-                    deleteDoc(doc(db, 'gallery', item.id));
-                  }
-                }} 
-                className="w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg"
+                disabled={loading}
+                onClick={() => handleDelete(item.id)} 
+                className="w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg disabled:opacity-50"
               >
-                <Trash2 size={20} />
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={20} />}
               </button>
             </div>
           </div>

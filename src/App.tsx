@@ -12,6 +12,7 @@ import { HomePage } from './pages/HomePage';
 import { ServicesPage } from './pages/ServicesPage';
 import { AboutPage } from './pages/AboutPage';
 import { GalleryPage } from './pages/GalleryPage';
+import { BooksPage } from './pages/BooksPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,6 +57,7 @@ export default function App() {
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/services" element={<ServicesPage />} />
                     <Route path="/gallery" element={<GalleryPage />} />
+                    <Route path="/books" element={<BooksPage />} />
                   </Routes>
                   <Footer />
                   <WhatsAppButton />

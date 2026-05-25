@@ -58,6 +58,21 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "content", "active"]
+    },
+    "Book": {
+      "title": "Book",
+      "description": "Collection of posted PDF books",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "author": { "type": "string" },
+        "description": { "type": "string" },
+        "pdfUrl": { "type": "string" },
+        "coverUrl": { "type": "string" },
+        "downloads": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "author", "pdfUrl", "createdAt"]
     }
   },
   "firestore": {
@@ -76,6 +91,10 @@
     "/testimonials/{testimonialId}": {
       "schema": "Testimonial",
       "description": "Collection of client testimonials"
+    },
+    "/books/{bookId}": {
+      "schema": "Book",
+      "description": "Collection of downloadable and readable PDF books"
     }
   }
 }

@@ -36,6 +36,15 @@ service cloud.firestore {
              data.uploadedAt is timestamp;
     }
 
+    function isValidBook(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() <= 500 &&
+             data.author is string && data.author.size() > 0 && data.author.size() <= 200 &&
+             data.description is string && data.description.size() <= 2000 &&
+             data.pdfUrl is string && data.pdfUrl.size() <= 1048576 &&
+             (!('coverUrl' in data) || (data.coverUrl is string && data.coverUrl.size() <= 1048576)) &&
+             data.createdAt is timestamp;
+    }
+
     function isValidRequest(data) {
       return data.fullName is string && data.fullName.size() <= 200 &&
              data.phone is string && data.phone.size() <= 30 &&
@@ -51,12 +60,14 @@ service cloud.firestore {
 
     match /services/{serviceId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidService(incoming());
+      allow create, update: if isAdmin() && isValidService(incoming());
+      allow delete: if isAdmin();
     }
 
     match /gallery/{itemId} {
       allow read: if true;
-      allow write: if isAdmin() && isValidGalleryItem(incoming());
+      allow create, update: if isAdmin() && isValidGalleryItem(incoming());
+      allow delete: if isAdmin();
     }
 
     match /requests/{requestId} {
@@ -69,6 +80,13 @@ service cloud.firestore {
     match /testimonials/{testimonialId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /books/{bookId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidBook(incoming());
+      allow update: if (isAdmin() && isValidBook(incoming())) || (incoming().diff(existing()).affectedKeys().hasOnly(['downloads']));
+      allow delete: if isAdmin();
     }
   }
 }

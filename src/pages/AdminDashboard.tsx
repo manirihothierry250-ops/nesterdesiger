@@ -24,7 +24,9 @@ import {
   Lock,
   Loader2,
   UploadCloud,
-  BookOpen
+  BookOpen,
+  ArrowLeft,
+  RotateCw
 } from 'lucide-react';
 import { collection, query, onSnapshot, doc, deleteDoc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
@@ -116,13 +118,23 @@ export function AdminDashboard() {
           <SidebarLink icon={Settings} label="Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
         </nav>
 
-        <button
-          onClick={() => signOut(auth)}
-          className="mt-auto flex items-center gap-3 text-slate-500 hover:text-red-400 transition-colors py-3 px-4 rounded-xl"
-        >
-          <LogOut size={20} />
-          <span className="text-sm font-bold">Logout</span>
-        </button>
+        <div className="mt-auto space-y-2">
+          <button
+            onClick={() => navigate('/')}
+            className="w-full flex items-center gap-3 text-slate-400 hover:text-brand-gold transition-colors py-3 px-4 rounded-xl"
+          >
+            <ArrowLeft size={20} />
+            <span className="text-sm font-bold">Back to Website</span>
+          </button>
+          
+          <button
+            onClick={() => signOut(auth)}
+            className="w-full flex items-center gap-3 text-slate-500 hover:text-red-400 transition-colors py-3 px-4 rounded-xl"
+          >
+            <LogOut size={20} />
+            <span className="text-sm font-bold">Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* Content */}
@@ -133,6 +145,13 @@ export function AdminDashboard() {
             <p className="text-slate-500 text-sm">Manage your website content effortlessly.</p>
           </div>
           <div className="flex gap-4">
+             <button 
+               onClick={() => window.location.reload()}
+               title="Reload Dashboard"
+               className="p-3 glass rounded-xl text-slate-400 hover:text-brand-gold transition-all relative"
+             >
+               <RotateCw size={20} className="hover:rotate-180 transition-transform duration-500" />
+             </button>
              <button className="p-3 glass rounded-xl text-slate-400 hover:text-brand-gold transition-all relative">
                <Bell size={20} />
                <span className="absolute top-3 right-3 w-2 h-2 bg-brand-gold rounded-full"></span>

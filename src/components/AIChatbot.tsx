@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, X, Bot, User, Loader2 } from 'lucide-react';
-import { GoogleGenAI } from '@google/genai';
 import { cn } from '../lib/utils';
 
 interface Message {
@@ -33,19 +32,18 @@ export function AIChatbot() {
     setLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: userMsg,
-        config: {
-          systemInstruction: `You are Nesta AI, a professional assistant for "Nesta Design", an ICT company in Kigali, Rwanda. 
-          Nesta Design provides: Website Development, Mobile Apps, Graphic Design, Branding, Photography, and Videography.
-          The contact phone is +250 782 739 381 and email is jeanesta81@gmail.com.
-          Be professional, creative, and concise. Always guide users to the "Request Service" section if they want to hire Nesta Design.`
-        }
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg }),
       });
-
-      setMessages(prev => [...prev, { role: 'bot', content: response.text || "I'm sorry, I couldn't process that. Please contact our support." }]);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch answer from server");
+      }
+      
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: 'bot', content: data.text || "I'm sorry, I couldn't process that. Please contact our support." }]);
     } catch (error) {
       console.error('AI Error:', error);
       setMessages(prev => [...prev, { role: 'bot', content: "Our AI is currently taking a break. Please contact us directly at +250 782 739 381." }]);

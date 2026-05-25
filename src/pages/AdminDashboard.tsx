@@ -26,7 +26,8 @@ import {
   UploadCloud,
   BookOpen,
   ArrowLeft,
-  RotateCw
+  RotateCw,
+  Menu
 } from 'lucide-react';
 import { collection, query, onSnapshot, doc, deleteDoc, updateDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
@@ -89,6 +90,7 @@ export function AdminDashboard() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -99,47 +101,137 @@ export function AdminDashboard() {
   if (loading) return <div className="min-h-screen bg-brand-black flex items-center justify-center">Loading...</div>;
   if (!user || !isAdmin) return null;
 
-  return (
-    <div className="min-h-screen bg-brand-black flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-white/5 flex flex-col p-6 sticky top-0 h-screen">
-        <div className="flex items-center gap-2 mb-12">
+  const renderSidebarContent = (isMobile = false) => (
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-gold rounded flex items-center justify-center font-bold text-brand-black">N</div>
           <span className="font-heading font-bold text-lg">NESTA<span className="text-brand-gold">ADMIN</span></span>
         </div>
-
-        <nav className="flex-1 space-y-2">
-          <SidebarLink icon={LayoutDashboard} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
-          <SidebarLink icon={Briefcase} label="Services" active={activeTab === 'services'} onClick={() => setActiveTab('services')} />
-          <SidebarLink icon={ImageIcon} label="Gallery" active={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')} />
-          <SidebarLink icon={BookOpen} label="Books" active={activeTab === 'books'} onClick={() => setActiveTab('books')} />
-          <SidebarLink icon={MessageSquare} label="Requests" active={activeTab === 'requests'} onClick={() => setActiveTab('requests')} />
-          <SidebarLink icon={UserIcon} label="Profile" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-          <SidebarLink icon={Settings} label="Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
-        </nav>
-
-        <div className="mt-auto space-y-2">
-          <button
-            onClick={() => navigate('/')}
-            className="w-full flex items-center gap-3 text-slate-400 hover:text-brand-gold transition-colors py-3 px-4 rounded-xl"
+        {isMobile && (
+          <button 
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-400 hover:text-white"
           >
-            <ArrowLeft size={20} />
-            <span className="text-sm font-bold">Back to Website</span>
+            <X size={18} />
+          </button>
+        )}
+      </div>
+
+      <nav className="flex-1 space-y-1.5 overflow-y-auto">
+        <SidebarLink icon={LayoutDashboard} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => { setActiveTab('dashboard'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={Briefcase} label="Services" active={activeTab === 'services'} onClick={() => { setActiveTab('services'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={ImageIcon} label="Gallery" active={activeTab === 'gallery'} onClick={() => { setActiveTab('gallery'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={BookOpen} label="Books" active={activeTab === 'books'} onClick={() => { setActiveTab('books'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={MessageSquare} label="Requests" active={activeTab === 'requests'} onClick={() => { setActiveTab('requests'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={UserIcon} label="Profile" active={activeTab === 'profile'} onClick={() => { setActiveTab('profile'); isMobile && setIsMobileMenuOpen(false); }} />
+        <SidebarLink icon={Settings} label="Settings" active={activeTab === 'settings'} onClick={() => { setActiveTab('settings'); isMobile && setIsMobileMenuOpen(false); }} />
+      </nav>
+
+      <div className="mt-auto pt-6 space-y-2 border-t border-white/5">
+        <button
+          onClick={() => { navigate('/'); isMobile && setIsMobileMenuOpen(false); }}
+          className="w-full flex items-center gap-3 text-slate-400 hover:text-brand-gold transition-colors py-2.5 px-4 rounded-xl text-left"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-xs font-bold">Back to Website</span>
+        </button>
+        
+        <button
+          onClick={() => { signOut(auth); isMobile && setIsMobileMenuOpen(false); }}
+          className="w-full flex items-center gap-3 text-slate-500 hover:text-red-400 transition-colors py-2.5 px-4 rounded-xl text-left"
+        >
+          <LogOut size={18} />
+          <span className="text-xs font-bold">Logout</span>
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-brand-black flex flex-col lg:flex-row relative">
+      {/* Mobile Sticky Top Header */}
+      <header className="lg:hidden flex items-center justify-between p-4 border-b border-white/5 bg-brand-black/90 backdrop-blur-md sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 text-slate-400 hover:text-brand-gold hover:bg-white/5 rounded-xl transition-all"
+            aria-label="Toggle menu"
+          >
+            <Menu size={22} />
           </button>
           
-          <button
-            onClick={() => signOut(auth)}
-            className="w-full flex items-center gap-3 text-slate-500 hover:text-red-400 transition-colors py-3 px-4 rounded-xl"
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-brand-gold rounded flex items-center justify-center font-bold text-xs text-brand-black">N</div>
+            <span className="font-heading font-bold text-base tracking-tight">NESTA<span className="text-brand-gold text-xs">ADMIN</span></span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5">
+          <button 
+            type="button"
+            onClick={() => window.location.reload()}
+            className="p-2 text-slate-400 hover:text-brand-gold rounded-xl hover:bg-white/5 transition-all"
+            title="Reload page"
           >
-            <LogOut size={20} />
-            <span className="text-sm font-bold">Logout</span>
+            <RotateCw size={15} />
+          </button>
+          
+          <button 
+            type="button"
+            onClick={() => setActiveTab('profile')}
+            className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center overflow-hidden"
+          >
+            <img 
+              src="/profile.png" 
+              alt="Admin" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${user.email}&background=002147&color=fff`;
+              }}
+            />
           </button>
         </div>
+      </header>
+
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden lg:flex w-64 border-r border-white/5 flex flex-col p-6 sticky top-0 h-screen shrink-0 bg-brand-black">
+        {renderSidebarContent(false)}
       </aside>
 
-      {/* Content */}
-      <main className="flex-1 p-10 overflow-y-auto">
-        <header className="flex justify-between items-center mb-10">
+      {/* Mobile Drawer Sidebar Navigation */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="lg:hidden fixed inset-0 bg-black/80 z-50 backdrop-blur-sm"
+            />
+            
+            {/* Drawer */}
+            <motion.aside
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', ease: 'easeInOut', duration: 0.25 }}
+              className="lg:hidden fixed top-0 left-0 bottom-0 w-64 bg-brand-black border-r border-white/10 z-[60] flex flex-col p-6 shadow-2xl"
+            >
+              {renderSidebarContent(true)}
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content Pane */}
+      <main className="flex-1 p-5 md:p-10 overflow-y-auto w-full max-w-7xl mx-auto">
+        {/* Desktop Title Header */}
+        <header className="hidden lg:flex justify-between items-center mb-10">
           <div>
             <h1 className="text-3xl font-heading font-black capitalize">{activeTab}</h1>
             <p className="text-slate-500 text-sm">Manage your website content effortlessly.</p>
@@ -179,12 +271,20 @@ export function AdminDashboard() {
           </div>
         </header>
 
+        {/* Mobile Heading Representation */}
+        <div className="lg:hidden mb-6">
+          <h1 className="text-2xl font-heading font-black capitalize leading-none mb-1 text-white">{activeTab}</h1>
+          <p className="text-slate-500 text-xs font-medium">Manage your website content effortlessly.</p>
+        </div>
+
+        {/* Tab Wrapper View with Slide-fade transition */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
+            className="w-full"
           >
             {activeTab === 'dashboard' && <StatsOverview />}
             {activeTab === 'services' && <ServicesManager />}
@@ -192,7 +292,7 @@ export function AdminDashboard() {
             {activeTab === 'gallery' && <GalleryManager />}
             {activeTab === 'books' && <BooksManager />}
             {activeTab === 'profile' && <AdminProfile />}
-            {activeTab === 'settings' && <div className="text-slate-500">Settings panel coming soon...</div>}
+            {activeTab === 'settings' && <div className="text-slate-500 italic p-6 text-xs font-mono">Settings panel coming soon...</div>}
           </motion.div>
         </AnimatePresence>
       </main>

@@ -61,7 +61,7 @@ const hobbies = [
 
 export function About() {
   return (
-    <section id="about" className="py-24 bg-[#050505] text-white">
+    <section id="about" className="py-24 bg-[#050505]/75 backdrop-blur-md text-white">
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* Left Column: Visual Profile & Quick Details */}

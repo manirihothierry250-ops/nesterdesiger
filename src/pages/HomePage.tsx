@@ -15,7 +15,7 @@ export function HomePage() {
       <FounderSection />
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 bg-brand-black">
+      <section id="contact" className="py-24 bg-brand-black/60 backdrop-blur-md">
         <div className="container mx-auto px-6">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
@@ -33,7 +33,7 @@ export function HomePage() {
 
 function FounderSection() {
   return (
-    <section className="py-24 bg-[#050505] relative overflow-hidden">
+    <section className="py-24 bg-[#050505]/70 backdrop-blur-md relative overflow-hidden">
       {/* Decorative Gradient */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-brand-gold/5 blur-[120px] rounded-full"></div>
       

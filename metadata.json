@@ -2,5 +2,7 @@
   "name": "Nesta Design",
   "description": "Professional ICT Solutions, Graphic Design, Website Development, and Creative Media Services. Nesta Design provides modern tech solutions for businesses including Web/App development, branding, and photography.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

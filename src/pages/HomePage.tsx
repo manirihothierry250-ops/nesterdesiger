@@ -49,14 +49,17 @@ function FounderSection() {
               <div className="w-full h-full bg-white/10 rounded-2xl overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
                 <img
                   src="/profile.png"
-                  alt="Jean Nesta"
+                  alt="HITIMANA JEAN"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "https://picsum.photos/seed/hitimana/1000/1250";
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-8 left-8">
-                  <h3 className="text-3xl font-black uppercase text-white font-heading">Jean Nesta</h3>
-                  <p className="text-brand-gold font-bold uppercase tracking-widest text-xs">Founder & CEO</p>
+                  <h3 className="text-3xl font-black uppercase text-white font-heading">HITIMANA JEAN</h3>
+                  <p className="text-brand-gold font-bold uppercase tracking-widest text-xs">Founder of NESTADESIGN</p>
                 </div>
               </div>
             </div>
@@ -71,26 +74,26 @@ function FounderSection() {
             className="space-y-8"
           >
             <div className="inline-block px-4 py-1 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-[10px] font-black uppercase tracking-[0.2em]">
-              The Visionary
+              The Founder
             </div>
             <h2 className="text-4xl md:text-6xl font-heading font-black leading-none">
               Leading With <br />
               <span className="text-gradient uppercase">Passion & Vision</span>
             </h2>
             <div className="glass p-6 rounded-2xl border-l-4 border-brand-gold italic text-slate-300 text-sm">
-              “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure. I look forward to working closely with you and your team.”
+              “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure.”
             </div>
             <p className="text-slate-400 text-lg leading-relaxed font-light">
-              With over a decade of experience in the ICT industry, Jean Nesta leads a team of creatives and engineers at Nesta Design. Our focus is on bridging the gap between business goals and innovative digital solutions.
+              I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. Highly skilled in Adobe Photoshop, Illustrator, and other industry standards.
             </p>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <p className="text-3xl font-black text-white">10+</p>
+                <p className="text-3xl font-black text-white">20+</p>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Years Experience</p>
               </div>
               <div className="space-y-2">
                 <p className="text-3xl font-black text-white">500+</p>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Projects Led</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Projects Delivered</p>
               </div>
             </div>
             <div className="pt-6">
@@ -149,7 +152,7 @@ function ContactTabs() {
             <div className="space-y-8">
               <ContactInfo icon={Phone} label="Call Us" value="+250 782 739 381" href="tel:+250782739381" />
               <ContactInfo icon={Mail} label="Email Us" value="jeanesta81@gmail.com" href="mailto:jeanesta81@gmail.com" />
-              <ContactInfo icon={MapPin} label="Visit Us" value="Kigali – Rwanda" href="#" />
+              <ContactInfo icon={MapPin} label="Visit Us" value="Rulindo – Rwanda" href="#" />
               
               <div className="pt-8">
                 <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>
@@ -170,10 +173,10 @@ function ContactTabs() {
             </div>
             <div className="aspect-square rounded-3xl overflow-hidden glass p-2">
               <div className="w-full h-full bg-white/5 rounded-2xl relative overflow-hidden flex items-center justify-center">
-                <div className="text-center">
+                <div className="text-center p-6">
                   <MapPin size={64} className="mx-auto mb-6 text-brand-gold opacity-50" />
-                  <p className="text-2xl font-black uppercase font-heading tracking-widest">Kigali, Rwanda</p>
-                  <p className="text-slate-500">Our Innovative Hub</p>
+                  <p className="text-xl font-black uppercase font-heading tracking-widest">Shyorongi - Rulindo</p>
+                  <p className="text-slate-500 mt-2">Kigali, Rwanda</p>
                 </div>
               </div>
             </div>

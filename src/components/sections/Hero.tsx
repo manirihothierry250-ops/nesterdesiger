@@ -86,7 +86,7 @@ export function Hero() {
               
               <div className="absolute bottom-10 right-10 bg-brand-black/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                  <p className="text-brand-gold font-black uppercase text-[10px] tracking-widest mb-1">Founder & CEO</p>
-                 <p className="text-white font-bold text-lg">Jean Nesta</p>
+                 <p className="text-white font-bold text-lg">HITIMANA JEAN</p>
               </div>
             </div>
           </motion.div>

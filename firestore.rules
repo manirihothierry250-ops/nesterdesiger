@@ -52,6 +52,12 @@ service cloud.firestore {
              data.createdAt is timestamp;
     }
 
+    function isValidWebsiteSettings(data) {
+      return data.company is map &&
+             data.contact is map &&
+             data.theme is map;
+    }
+
     // --- Rules ---
 
     match /admins/{userId} {
@@ -86,6 +92,12 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isAdmin() && isValidBook(incoming());
       allow update: if (isAdmin() && isValidBook(incoming())) || (incoming().diff(existing()).affectedKeys().hasOnly(['downloads']));
+      allow delete: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidWebsiteSettings(incoming());
       allow delete: if isAdmin();
     }
   }

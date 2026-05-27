@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, UploadCloud, Trash2, Loader2, BookOpen, User, Link as LinkIcon, FileText } from 'lucide-react';
 import { collection, addDoc, doc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { useBooks, Book } from '../hooks/useBooks';
-import { handleFirestoreError, OperationType } from '../pages/AdminDashboard';
 import { ConfirmationModal } from './ConfirmationModal';
 
 export function BooksManager() {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 
 export interface CompanySettings {
   companyName: string;
@@ -87,6 +87,7 @@ export function useWebsiteSettings() {
     }, (error) => {
       console.error('Error fetching website settings:', error);
       setLoading(false);
+      handleFirestoreError(error, OperationType.GET, 'settings/general');
     });
 
     return () => unsubscribe();
@@ -99,6 +100,7 @@ export function useWebsiteSettings() {
       return { success: true };
     } catch (error) {
       console.error('Error saving website settings:', error);
+      handleFirestoreError(error, OperationType.WRITE, 'settings/general');
       return { success: false, error };
     }
   };

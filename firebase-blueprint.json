@@ -73,6 +73,17 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "author", "pdfUrl", "createdAt"]
+    },
+    "WebsiteSettings": {
+      "title": "Website Settings",
+      "description": "General settings of the landing page",
+      "type": "object",
+      "properties": {
+        "company": { "type": "object" },
+        "contact": { "type": "object" },
+        "theme": { "type": "object" }
+      },
+      "required": ["company", "contact", "theme"]
     }
   },
   "firestore": {
@@ -95,6 +106,10 @@
     "/books/{bookId}": {
       "schema": "Book",
       "description": "Collection of downloadable and readable PDF books"
+    },
+    "/settings/{settingId}": {
+      "schema": "WebsiteSettings",
+      "description": "General configuration document for site content and theme"
     }
   }
 }

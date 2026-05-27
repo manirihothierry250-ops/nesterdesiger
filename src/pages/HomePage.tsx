@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, ArrowRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { AnimatePresence } from 'framer-motion';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 import { SOCIAL_LINKS } from '../constants';
 
@@ -32,8 +33,13 @@ export function HomePage() {
 }
 
 function FounderSection() {
+  const { settings } = useWebsiteSettings();
+  const fName = settings?.company?.founderName || 'HITIMANA JEAN';
+  const fTitle = settings?.company?.founderTitle || 'Founder of NESTADESIGN';
+  const fEmail = settings?.contact?.email || 'jeanesta81@gmail.com';
+  
   return (
-    <section className="py-24 bg-[#050505]/70 backdrop-blur-md relative overflow-hidden">
+    <section className="py-24 bg-[#050505]/70 backdrop-blur-md relative overflow-hidden font-sans">
       {/* Decorative Gradient */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-brand-gold/5 blur-[120px] rounded-full"></div>
       
@@ -49,7 +55,7 @@ function FounderSection() {
               <div className="w-full h-full bg-white/10 rounded-2xl overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
                 <img
                   src="/profile.png"
-                  alt="HITIMANA JEAN"
+                  alt={fName}
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
@@ -58,8 +64,8 @@ function FounderSection() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                 <div className="absolute bottom-8 left-8">
-                  <h3 className="text-3xl font-black uppercase text-white font-heading">HITIMANA JEAN</h3>
-                  <p className="text-brand-gold font-bold uppercase tracking-widest text-xs">Founder of NESTADESIGN</p>
+                  <h3 className="text-3xl font-black uppercase text-white font-heading">{fName}</h3>
+                  <p className="text-brand-gold font-bold uppercase tracking-widest text-xs">{fTitle}</p>
                 </div>
               </div>
             </div>
@@ -78,27 +84,27 @@ function FounderSection() {
             </div>
             <h2 className="text-4xl md:text-6xl font-heading font-black leading-none">
               Leading With <br />
-              <span className="text-gradient uppercase">Passion & Vision</span>
+              <span className="text-gradient uppercase font-heading">Passion & Vision</span>
             </h2>
             <div className="glass p-6 rounded-2xl border-l-4 border-brand-gold italic text-slate-300 text-sm">
               “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure.”
             </div>
-            <p className="text-slate-400 text-lg leading-relaxed font-light">
-              I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. Highly skilled in Adobe Photoshop, Illustrator, and other industry standards.
+            <p className="text-slate-400 text-base leading-relaxed font-light">
+              {settings?.company?.founderBio || 'I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. Highly skilled in Adobe Photoshop, Illustrator, and other industry standards.'}
             </p>
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <p className="text-3xl font-black text-white">20+</p>
+                <p className="text-3xl font-black text-white">{settings?.company?.experienceYears || '20+'}</p>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Years Experience</p>
               </div>
               <div className="space-y-2">
-                <p className="text-3xl font-black text-white">500+</p>
+                <p className="text-3xl font-black text-white">{settings?.company?.projectsDelivered || '500+'}</p>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Projects Delivered</p>
               </div>
             </div>
             <div className="pt-6">
               <a 
-                href="mailto:jeanesta81@gmail.com"
+                href={`mailto:${fEmail}`}
                 className="inline-flex items-center gap-3 text-brand-gold font-black uppercase tracking-[0.2em] group text-sm"
               >
                 Connect with the Founder
@@ -114,6 +120,13 @@ function FounderSection() {
 
 function ContactTabs() {
   const [activeTab, setActiveTab] = React.useState<'info' | 'service'>('service');
+  const { settings } = useWebsiteSettings();
+  
+  const phoneVal = settings?.contact?.phone || '+250 782 739 381';
+  const cleanPhone = phoneVal.replace(/[^0-9+]/g, '');
+  const emailVal = settings?.contact?.email || 'jeanesta81@gmail.com';
+  const addressVal = settings?.contact?.addressText || 'Shyorongi - Rulindo';
+  const cityVal = settings?.contact?.cityCountry || 'Kigali, Rwanda';
 
   return (
     <div>
@@ -149,10 +162,10 @@ function ContactTabs() {
             exit={{ opacity: 0, x: 20 }}
             className="grid grid-cols-1 md:grid-cols-2 gap-8"
           >
-            <div className="space-y-8">
-              <ContactInfo icon={Phone} label="Call Us" value="+250 782 739 381" href="tel:+250782739381" />
-              <ContactInfo icon={Mail} label="Email Us" value="jeanesta81@gmail.com" href="mailto:jeanesta81@gmail.com" />
-              <ContactInfo icon={MapPin} label="Visit Us" value="Rulindo – Rwanda" href="#" />
+            <div className="space-y-8 font-sans">
+              <ContactInfo icon={Phone} label="Call Us" value={phoneVal} href={`tel:${cleanPhone}`} />
+              <ContactInfo icon={Mail} label="Email Us" value={emailVal} href={`mailto:${emailVal}`} />
+              <ContactInfo icon={MapPin} label="Visit Us" value={`${addressVal}, ${cityVal}`} href="#" />
               
               <div className="pt-8">
                 <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>
@@ -171,12 +184,12 @@ function ContactTabs() {
                 </div>
               </div>
             </div>
-            <div className="aspect-square rounded-3xl overflow-hidden glass p-2">
+            <div className="aspect-square rounded-3xl overflow-hidden glass p-2 font-sans">
               <div className="w-full h-full bg-white/5 rounded-2xl relative overflow-hidden flex items-center justify-center">
                 <div className="text-center p-6">
-                  <MapPin size={64} className="mx-auto mb-6 text-brand-gold opacity-50" />
-                  <p className="text-xl font-black uppercase font-heading tracking-widest">Shyorongi - Rulindo</p>
-                  <p className="text-slate-500 mt-2">Kigali, Rwanda</p>
+                  <MapPin size={64} className="mx-auto mb-6 text-brand-gold opacity-50 animate-bounce" />
+                  <p className="text-xl font-black uppercase font-heading tracking-widest">{addressVal}</p>
+                  <p className="text-slate-500 mt-2">{cityVal}</p>
                 </div>
               </div>
             </div>

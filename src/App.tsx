@@ -16,6 +16,7 @@ import { BooksPage } from './pages/BooksPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useWebsiteSettings } from './hooks/useWebsiteSettings';
 
 // Scroll to top on route change component for React Router
 function ScrollToTop() {
@@ -26,33 +27,64 @@ function ScrollToTop() {
   return null;
 }
 
+const backgroundMap = {
+  slate: 'bg-slate-950',
+  navy: 'bg-[#020617]',
+  emerald: 'bg-[#021c11]',
+  charcoal: 'bg-[#090d16]',
+  pitchBlack: 'bg-black'
+};
+
 export default function App() {
+  const { settings } = useWebsiteSettings();
+  const bgClass = backgroundMap[settings?.theme?.bgTone || 'slate'] || 'bg-slate-950';
+
   return (
     <Router>
       <AuthProvider>
         <ScrollToTop />
-        <div className="min-h-screen bg-brand-black selection:bg-brand-gold selection:text-brand-black relative overflow-hidden">
+        <div className={`min-h-screen ${bgClass} selection:bg-brand-gold selection:text-brand-black relative overflow-hidden transition-colors duration-[1000ms]`}>
           
           {/* Website Main Dynamic Background (Sky Blue, White, Green, and White-Yellow theme) */}
-          <div className="fixed inset-0 -z-50 pointer-events-none overflow-hidden bg-slate-950">
+          <div className="fixed inset-0 -z-50 pointer-events-none overflow-hidden">
             {/* Subtle light/green glowing overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.06),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.04),transparent_50%)]" />
             
             {/* 1. Sky Blue Glowing Orb */}
-            <div className="absolute top-[5%] left-[5%] w-[60vw] h-[60vw] max-w-[700px] max-h-[700px] rounded-full bg-[#38bdf8]/15 blur-[160px] mix-blend-screen opacity-85" />
+            <motion.div 
+              animate={settings?.theme?.enableGlowAnimation ? {
+                y: [0, -25, 0],
+                x: [0, 15, 0],
+              } : {}}
+              transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+              style={{ opacity: (settings?.theme?.skyBlueIntensity || 15) / 100 }}
+              className="absolute top-[5%] left-[5%] w-[60vw] h-[60vw] max-w-[700px] max-h-[700px] rounded-full bg-[#38bdf8] blur-[160px] mix-blend-screen transition-opacity duration-1000" 
+            />
             
             {/* 2. Pure White Core Accent */}
-            <div className="absolute top-[20%] right-[15%] w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] rounded-full bg-white/10 blur-[130px] mix-blend-screen opacity-90" />
+            <div className="absolute top-[20%] right-[15%] w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] rounded-full bg-white/5 blur-[130px] mix-blend-screen" />
             
             {/* 3. Lush Green Glowing Orb */}
-            <div className="absolute bottom-[25%] left-[8%] w-[55vw] h-[55vw] max-w-[650px] max-h-[650px] rounded-full bg-emerald-500/15 blur-[170px] mix-blend-screen opacity-80" />
+            <motion.div 
+              animate={settings?.theme?.enableGlowAnimation ? {
+                y: [0, 20, 0],
+                x: [0, -15, 0],
+              } : {}}
+              transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              style={{ opacity: (settings?.theme?.emeraldGreenIntensity || 15) / 100 }}
+              className="absolute bottom-[25%] left-[8%] w-[55vw] h-[55vw] max-w-[650px] max-h-[650px] rounded-full bg-emerald-500 transition-opacity duration-1000 blur-[170px] mix-blend-screen" 
+            />
             
             {/* 4. Soft White-Yellow Highlight Orb */}
-            <div className="absolute bottom-[10%] right-[5%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-amber-200/15 blur-[150px] mix-blend-screen opacity-85" />
-
-            {/* Supplementary subtle gradients for ultimate smoothness */}
-            <div className="absolute top-[40%] left-[40%] w-[35vw] h-[35vw] max-w-[450px] max-h-[450px] rounded-full bg-sky-400/10 blur-[140px] mix-blend-screen opacity-60" />
-            <div className="absolute bottom-[40%] right-[25%] w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] rounded-full bg-yellow-100/10 blur-[130px] mix-blend-screen opacity-70" />
+            <motion.div 
+              animate={settings?.theme?.enableGlowAnimation ? {
+                y: [0, -20, 0],
+                x: [0, -10, 0],
+              } : {}}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              style={{ opacity: (settings?.theme?.amberYellowIntensity || 15) / 100 }}
+              className="absolute bottom-[10%] right-[5%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full bg-amber-200 transition-opacity duration-1000 blur-[150px] mix-blend-screen" 
+            />
           </div>
 
           {/* Side Labels */}

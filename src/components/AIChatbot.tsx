@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Send, X, Bot, User, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useWebsiteSettings } from '../hooks/useWebsiteSettings';
 
 interface Message {
   role: 'user' | 'bot';
@@ -9,6 +10,7 @@ interface Message {
 }
 
 export function AIChatbot() {
+  const { settings } = useWebsiteSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { 
@@ -77,7 +79,8 @@ export function AIChatbot() {
       setMessages(prev => [...prev, { role: 'bot', content: data.text || "I'm sorry, I couldn't process that. Please contact our support." }]);
     } catch (error) {
       console.error('AI Error:', error);
-      setMessages(prev => [...prev, { role: 'bot', content: "Our AI is currently taking a break. Please contact us directly at +250 782 739 381." }]);
+      const activePhone = settings?.contact?.phone || '+250 782 739 381';
+      setMessages(prev => [...prev, { role: 'bot', content: `Our AI is currently taking a break. Please contact us directly at ${activePhone}.` }]);
     } finally {
       setLoading(false);
     }

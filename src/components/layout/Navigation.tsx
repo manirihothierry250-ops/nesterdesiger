@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, MessageCircle, Music2, ArrowLeft, RotateCw } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useWebsiteSettings } from '../../hooks/useWebsiteSettings';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -128,6 +129,8 @@ export function Navbar() {
 }
 
 export function Footer() {
+  const { settings } = useWebsiteSettings();
+  
   return (
     <footer className="relative z-10 bg-black/40 border-t border-white/5 pt-20 pb-12 overflow-hidden">
       {/* Decorative Glow */}
@@ -139,11 +142,11 @@ export function Footer() {
             <Link to="/" className="flex items-center gap-3">
               <img src="/profile.png" alt="Nesta Design" className="w-8 h-8 rounded object-cover" />
               <span className="font-heading font-bold text-xl uppercase tracking-tighter">
-                NESTA<span className="text-brand-gold">DESIGN</span>
+                {settings?.company?.companyName || 'NESTA'}<span className="text-brand-gold">DESIGN</span>
               </span>
             </Link>
-            <p className="text-slate-400 text-sm leading-relaxed font-light">
-              Crafting digital excellence in Kigali since 2020. Our mission is to be the ICT company of choice by providing quality service and timely solutions.
+            <p className="text-slate-400 text-sm leading-relaxed font-light font-sans">
+              Crafting digital excellence with robust solutions. Inspired by innovation, committed to delivering first-class creative experiences.
             </p>
             <div className="flex gap-4">
               <SocialIcon icon={Facebook} href={SOCIAL_LINKS.Facebook} />
@@ -170,9 +173,9 @@ export function Footer() {
           <div>
              <p className="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black mb-6">Contact Info</p>
              <ul className="space-y-6">
-                <FooterInfo label="Phone" value="+250 782 739 381" />
-                <FooterInfo label="Email" value="jeanesta81@gmail.com" />
-                <FooterInfo label="Studio" value="Kigali – Rwanda" />
+                <FooterInfo label="Phone" value={settings?.contact?.phone || '+250 782 739 381'} />
+                <FooterInfo label="Email" value={settings?.contact?.email || 'jeanesta81@gmail.com'} />
+                <FooterInfo label="Studio" value={`${settings?.contact?.addressText || 'Kigali'} — ${settings?.contact?.cityCountry || 'Rwanda'}`} />
              </ul>
           </div>
 
@@ -186,7 +189,7 @@ export function Footer() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 px-6 lg:px-0">
           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">
-            © {new Date().getFullYear()} Nesta Design — All Rights Reserved
+            © {new Date().getFullYear()} {settings?.company?.companyName || 'Nesta Design'} — All Rights Reserved
           </p>
           <div className="flex gap-8 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
              <Link to="/login" className="hover:text-brand-gold transition-colors">Admin Login</Link>
@@ -223,9 +226,13 @@ function SocialIcon({ icon: Icon, href }: { icon: any, href: string }) {
 }
 
 export function WhatsAppButton() {
+  const { settings } = useWebsiteSettings();
+  const rawNum = settings?.contact?.whatsappNumber || '+250782739381';
+  const cleanNum = rawNum.replace(/[^0-9]/g, '');
+
   return (
     <a
-      href="https://wa.me/250782739381"
+      href={`https://wa.me/${cleanNum}`}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform duration-300 shadow-green-500/20"

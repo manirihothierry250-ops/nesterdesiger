@@ -5,11 +5,14 @@ import { collection, addDoc, doc, deleteDoc, serverTimestamp } from 'firebase/fi
 import { db } from '../lib/firebase';
 import { useBooks, Book } from '../hooks/useBooks';
 import { handleFirestoreError, OperationType } from '../pages/AdminDashboard';
+import { ConfirmationModal } from './ConfirmationModal';
 
 export function BooksManager() {
   const { books, loading: booksLoading } = useBooks();
   const [showAdd, setShowAdd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [deleteTargetTitle, setDeleteTargetTitle] = useState<string>('');
   
   const [newBook, setNewBook] = useState({
     title: '',
@@ -135,19 +138,25 @@ export function BooksManager() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you absolutely sure you want to delete this book? This action is permanent and cannot be undone.')) {
-      setLoading(true);
-      try {
-        await deleteDoc(doc(db, 'books', id));
-        alert('Book deleted successfully.');
-      } catch (err) {
-        console.error(err);
-        alert('Failed to delete book. Make sure you are authorized.');
-        handleFirestoreError(err, OperationType.DELETE, `books/${id}`);
-      } finally {
-        setLoading(false);
-      }
+  const initiateDelete = (id: string, title: string) => {
+    setDeleteTargetId(id);
+    setDeleteTargetTitle(title);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, 'books', id));
+      alert('Book deleted successfully.');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete book. Make sure you are authorized.');
+      handleFirestoreError(err, OperationType.DELETE, `books/${id}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -320,7 +329,7 @@ export function BooksManager() {
 
               <div className="flex gap-2">
                 <button 
-                  onClick={() => handleDelete(book.id)} 
+                  onClick={() => initiateDelete(book.id, book.title)} 
                   className="p-3 bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 rounded-xl transition-colors"
                 >
                   <Trash2 size={16} />
@@ -330,6 +339,14 @@ export function BooksManager() {
           ))}
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={deleteTargetId !== null}
+        title="Delete Book"
+        message={`Are you absolutely sure you want to delete "${deleteTargetTitle}"? This action is permanent and cannot be undone.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 }

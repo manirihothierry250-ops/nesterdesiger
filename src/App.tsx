@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, ScrollRestoration } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, ScrollRestoration, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Navbar, Footer, WhatsAppButton } from './components/layout/Navigation';
 import { AIChatbot } from './components/AIChatbot';
@@ -20,10 +20,23 @@ import { useWebsiteSettings } from './hooks/useWebsiteSettings';
 
 // Scroll to top on route change component for React Router
 function ScrollToTop() {
-  const { pathname } = window.location;
+  const { pathname, hash } = useLocation();
+
   React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (hash) {
+      const elementId = hash.replace('#', '');
+      const element = document.getElementById(elementId);
+      if (element) {
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+        return () => clearTimeout(timer);
+      }
+    }
+    // Default to top of the page smoothly
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname, hash]);
+
   return null;
 }
 

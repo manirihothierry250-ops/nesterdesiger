@@ -155,12 +155,12 @@ export function AdminDashboard() {
           <button 
             type="button"
             onClick={() => setActiveTab('profile')}
-            className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center overflow-hidden"
+            className="w-8 h-8 rounded-[28%] border border-white/10 flex items-center justify-center overflow-hidden"
           >
             <img 
               src="/profile.png" 
               alt="Admin" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-[28%]"
               referrerPolicy="no-referrer"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${user.email}&background=002147&color=fff`;
@@ -229,11 +229,11 @@ export function AdminDashboard() {
                  activeTab === 'profile' ? "ring-2 ring-brand-gold" : "hover:bg-white/5"
                )}
              >
-               <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center overflow-hidden">
+               <div className="w-8 h-8 rounded-[28%] border border-white/10 flex items-center justify-center overflow-hidden">
                  <img 
                    src="/profile.png" 
                    alt="Admin" 
-                   className="w-full h-full object-cover"
+                   className="w-full h-full object-cover rounded-[28%]"
                    referrerPolicy="no-referrer"
                    onError={(e) => {
                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${user.email}&background=002147&color=fff`;
@@ -1430,11 +1430,11 @@ function AdminProfile() {
         
         <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
           <div className="relative group">
-            <div className="w-40 h-40 rounded-3xl bg-brand-black border-2 border-brand-gold/20 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-brand-gold">
+            <div className="w-40 h-40 rounded-[28%] bg-brand-black border-2 border-brand-gold/20 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-brand-gold">
               <img 
                 src="/profile.png" 
                 alt="Profile" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-[28%]"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   // Fallback to Icon if image doesn't exist

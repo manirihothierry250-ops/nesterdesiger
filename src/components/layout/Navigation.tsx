@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, MessageCircle, Music2, ArrowLeft, RotateCw } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, MessageCircle, Music2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { useWebsiteSettings } from '../../hooks/useWebsiteSettings';
 
@@ -20,7 +20,6 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,32 +39,13 @@ export function Navbar() {
       <div className="container mx-auto px-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-3">
-            <img src="/profile.png" alt="Nesta Design" className="w-10 h-10 rounded-lg object-cover" />
+            <img src="/profile.png" alt="Nesta Design" className="w-10 h-10 rounded-[28%] object-cover" />
             <span className="font-heading font-bold text-xl md:text-2xl tracking-tighter uppercase whitespace-nowrap">
               NESTA<span className="text-brand-gold">DESIGN</span>
             </span>
           </Link>
 
-          {/* Navigation Controls: Back & Reload */}
-          <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-1.5 py-1 backdrop-blur-md">
-            <button
-              onClick={() => navigate(-1)}
-              title="Go Back"
-              className="p-1.5 text-slate-400 hover:text-brand-gold hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center"
-              id="global-back-button"
-            >
-              <ArrowLeft size={16} />
-            </button>
-            <div className="w-[1px] h-4 bg-white/10 mx-1" />
-            <button
-              onClick={() => window.location.reload()}
-              title="Reload Page"
-              className="p-1.5 text-slate-400 hover:text-brand-gold hover:bg-white/5 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center"
-              id="global-reload-button"
-            >
-              <RotateCw size={14} className="hover:rotate-180 transition-transform duration-500" />
-            </button>
-          </div>
+
         </div>
 
         {/* Desktop Nav */}
@@ -140,7 +120,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 px-6 lg:px-0">
           <div className="space-y-6">
             <Link to="/" className="flex items-center gap-3">
-              <img src="/profile.png" alt="Nesta Design" className="w-8 h-8 rounded object-cover" />
+              <img src="/profile.png" alt="Nesta Design" className="w-8 h-8 rounded-[28%] object-cover" />
               <span className="font-heading font-bold text-xl uppercase tracking-tighter">
                 {settings?.company?.companyName || 'NESTA'}<span className="text-brand-gold">DESIGN</span>
               </span>
@@ -193,9 +173,9 @@ export function Footer() {
           </p>
           <div className="flex gap-8 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
              <Link to="/login" className="hover:text-brand-gold transition-colors">Admin Login</Link>
-             <a href="#" className="hover:text-white transition-colors">Privacy</a>
-             <a href="#" className="hover:text-white transition-colors">Terms</a>
-             <a href="#" className="hover:text-white transition-colors">Cookies</a>
+             <a href="javascript:void(0)" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Privacy</a>
+             <a href="javascript:void(0)" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Terms</a>
+             <a href="javascript:void(0)" onClick={(e) => e.preventDefault()} className="hover:text-white transition-colors">Cookies</a>
           </div>
         </div>
       </div>

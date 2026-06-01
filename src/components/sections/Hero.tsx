@@ -84,9 +84,12 @@ export function Hero() {
               <div className="absolute top-10 right-10 w-20 h-20 bg-brand-gold/10 rounded-full blur-2xl animate-pulse"></div>
               <div className="absolute bottom-10 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
               
-              <div className="absolute bottom-10 right-10 bg-brand-black/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+              <div className="absolute bottom-10 right-10 bg-brand-black/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
                  <p className="text-brand-gold font-black uppercase text-[10px] tracking-widest mb-1">Founder & CEO</p>
-                 <p className="text-white font-bold text-lg">HITIMANA JEAN</p>
+                 <p className="text-white font-bold text-lg mb-1">HITIMANA JEAN</p>
+                 <div className="border-t border-white/10 pt-1.5 mt-1.5 font-handwriting text-brand-gold text-2xl tracking-normal leading-none select-none">
+                   Hitimana Jean
+                 </div>
               </div>
             </div>
           </motion.div>

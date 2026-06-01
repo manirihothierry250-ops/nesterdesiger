@@ -144,9 +144,18 @@ export function About() {
               <h2 className="text-4xl md:text-5xl font-heading font-black mb-6 leading-tight uppercase">
                 ABOUT <span className="text-brand-gold">ME</span>
               </h2>
-              <p className="text-slate-300 text-base md:text-lg leading-relaxed font-light">
-                I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. I am highly skilled in industry-standard software such as Adobe Photoshop, Illustrator, and others. I am passionate about innovation and dedicated to delivering high-quality solutions tailored to client needs.
-              </p>
+              <div className="space-y-6">
+                <p className="text-slate-300 text-base md:text-lg leading-relaxed font-light">
+                  I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. I am highly skilled in industry-standard software such as Adobe Photoshop, Illustrator, and others. I am passionate about innovation and dedicated to delivering high-quality solutions tailored to client needs.
+                </p>
+                <div className="bg-gradient-to-r from-amber-600/5 to-yellow-600/5 border border-amber-500/10 p-5 rounded-2xl relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-brand-gold/5 rounded-full blur-xl pointer-events-none"></div>
+                  <p className="font-handwriting text-2xl text-amber-200/90 leading-tight">
+                    "Every pixel holds a purpose, and every layout tells a story. At Nesta Design, we don't just craft graphics or code applications; we build visual experiences that resonate."
+                  </p>
+                  <p className="text-right font-handwriting text-xl text-brand-gold mt-2">— Hitimana Jean</p>
+                </div>
+              </div>
             </div>
 
             {/* Skills Progress Bars */}

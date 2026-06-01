@@ -86,8 +86,10 @@ function FounderSection() {
               Leading With <br />
               <span className="text-gradient uppercase font-heading">Passion & Vision</span>
             </h2>
-            <div className="glass p-6 rounded-2xl border-l-4 border-brand-gold italic text-slate-300 text-sm">
+            <div className="glass p-6 rounded-2xl border-l-4 border-brand-gold font-handwriting text-2xl text-amber-100/95 leading-relaxed relative overflow-hidden">
+              <span className="absolute -top-2 right-4 text-8xl text-brand-gold/5 pointer-events-none font-serif">“</span>
               “I am so grateful that you have taken the time to consider partnering with Nesta Design to serve you. While we are proud of our work and the results we will help you achieve... it is the relationships we build that will endure.”
+              <div className="mt-3 text-right text-sm tracking-widest text-brand-gold font-sans font-bold uppercase">— {fName}</div>
             </div>
             <p className="text-slate-400 text-base leading-relaxed font-light">
               {settings?.company?.founderBio || 'I am a professional Graphic Designer with extensive experience in creating diverse visual designs that help companies and individuals communicate their messages effectively and beautifully. Highly skilled in Adobe Photoshop, Illustrator, and other industry standards.'}
@@ -165,7 +167,7 @@ function ContactTabs() {
             <div className="space-y-8 font-sans">
               <ContactInfo icon={Phone} label="Call Us" value={phoneVal} href={`tel:${cleanPhone}`} />
               <ContactInfo icon={Mail} label="Email Us" value={emailVal} href={`mailto:${emailVal}`} />
-              <ContactInfo icon={MapPin} label="Visit Us" value={`${addressVal}, ${cityVal}`} href="#" />
+              <ContactInfo icon={MapPin} label="Visit Us" value={`${addressVal}, ${cityVal}`} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${addressVal}, ${cityVal}`)}`} />
               
               <div className="pt-8">
                 <h4 className="font-bold mb-6 uppercase tracking-widest text-xs text-slate-500">Follow Us</h4>

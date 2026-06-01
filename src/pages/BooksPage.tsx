@@ -33,7 +33,7 @@ export function BooksPage() {
         downloads: increment(1)
       });
     } catch (error) {
-      console.error('Error recording download:', error);
+      console.error('Error recording download:', error instanceof Error ? error.message : String(error));
     }
   };
 

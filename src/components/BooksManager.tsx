@@ -129,7 +129,7 @@ export function BooksManager() {
       setShowAdd(false);
       alert('Book added to digital library successfully.');
     } catch (err) {
-      console.error(err);
+      console.error("Failed to add book:", err instanceof Error ? err.message : String(err));
       alert('Failed to insert book to Firestore.');
       handleFirestoreError(err, OperationType.CREATE, 'books');
     } finally {
@@ -151,7 +151,7 @@ export function BooksManager() {
       await deleteDoc(doc(db, 'books', id));
       alert('Book deleted successfully.');
     } catch (err) {
-      console.error(err);
+      console.error("Failed to delete book:", err instanceof Error ? err.message : String(err));
       alert('Failed to delete book. Make sure you are authorized.');
       handleFirestoreError(err, OperationType.DELETE, `books/${id}`);
     } finally {

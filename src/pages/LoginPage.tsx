@@ -27,7 +27,7 @@ export function LoginPage() {
         setError('Access denied. This email is not authorized for admin access.');
       }
     } catch (err: any) {
-      console.error(err);
+      console.error("Login failed:", err instanceof Error ? err.message : String(err));
       if (err.code === 'auth/popup-blocked') {
         setError('Login popup was blocked. Please allow popups for this site.');
       } else {
@@ -94,14 +94,7 @@ export function LoginPage() {
             </motion.div>
           )}
 
-          <div className="pt-4 text-center">
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-4">Authorized Emails Only</p>
-            <div className="flex flex-col gap-2">
-              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">jeanesta81@gmail.com</span>
-              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">manirihothierry8@gmail.com</span>
-              <span className="text-[10px] text-brand-gold/50 font-mono tracking-tighter">manirihothierry250@gmail.com</span>
-            </div>
-          </div>
+
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/5 text-center">

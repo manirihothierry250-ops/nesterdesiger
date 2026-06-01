@@ -51,7 +51,7 @@ export function ServiceRequestForm({ className }: { className?: string }) {
       reset();
       setTimeout(() => setIsSuccess(false), 5000);
     } catch (error) {
-      console.error('Error submitting request:', error);
+      console.error('Error submitting request:', error instanceof Error ? error.message : String(error));
       alert('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);

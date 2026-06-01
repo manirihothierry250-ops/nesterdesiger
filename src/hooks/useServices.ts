@@ -31,7 +31,7 @@ export function useServices() {
       setServices(data);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching services:", error);
+      console.error("Error fetching services:", error instanceof Error ? error.message : String(error));
       setLoading(false);
     });
 

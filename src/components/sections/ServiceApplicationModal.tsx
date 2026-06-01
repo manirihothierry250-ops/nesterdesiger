@@ -55,7 +55,7 @@ export function ServiceApplicationModal({ isOpen, onClose, serviceTitle }: Servi
         });
       }, 3000);
     } catch (error) {
-      console.error('Error submitting request:', error);
+      console.error('Error submitting request:', error instanceof Error ? error.message : String(error));
       alert('Failed to submit request. Please try again.');
     } finally {
       setLoading(false);

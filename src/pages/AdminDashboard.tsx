@@ -865,7 +865,7 @@ function ServicesManager() {
       setShowAdd(false);
       alert('Service added successfully.');
     } catch (err) {
-      console.error(err);
+      console.error('Failed to add service:', err instanceof Error ? err.message : String(err));
       alert('Failed to add service');
       handleFirestoreError(err, OperationType.CREATE, 'services');
     } finally {
@@ -887,7 +887,7 @@ function ServicesManager() {
       await deleteDoc(doc(db, 'services', id));
       alert('Service deleted successfully.');
     } catch (err) {
-      console.error(err);
+      console.error('Failed to delete service:', err instanceof Error ? err.message : String(err));
       alert('Failed to delete service. Make sure you are authorized.');
       handleFirestoreError(err, OperationType.DELETE, `services/${id}`);
     } finally {
@@ -1218,7 +1218,7 @@ function GalleryManager() {
       setShowAdd(false);
       alert('Item added to gallery successfully.');
     } catch (err) {
-      console.error(err);
+      console.error('Failed to save to gallery:', err instanceof Error ? err.message : String(err));
       alert('Failed to save to gallery');
       handleFirestoreError(err, OperationType.CREATE, 'gallery');
     } finally {
@@ -1240,7 +1240,7 @@ function GalleryManager() {
       await deleteDoc(doc(db, 'gallery', id));
       alert('Gallery item deleted successfully.');
     } catch (err) {
-      console.error(err);
+      console.error('Failed to delete gallery item:', err instanceof Error ? err.message : String(err));
       alert('Failed to delete gallery item. Make sure you are authorized.');
       handleFirestoreError(err, OperationType.DELETE, `gallery/${id}`);
     } finally {
@@ -1411,7 +1411,7 @@ function AdminProfile() {
         setConfirmPassword('');
       }
     } catch (err: any) {
-      console.error(err);
+      console.error('Failed to change password:', err instanceof Error ? err.message : String(err));
       if (err.code === 'auth/requires-recent-login') {
         setPassError('Please log out and log back in to change your password for security reasons.');
       } else {

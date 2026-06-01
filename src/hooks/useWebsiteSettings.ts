@@ -85,7 +85,7 @@ export function useWebsiteSettings() {
       }
       setLoading(false);
     }, (error) => {
-      console.error('Error fetching website settings:', error);
+      console.error('Error fetching website settings:', error instanceof Error ? error.message : String(error));
       setLoading(false);
       handleFirestoreError(error, OperationType.GET, 'settings/general');
     });
@@ -99,9 +99,10 @@ export function useWebsiteSettings() {
       await setDoc(docRef, newSettings);
       return { success: true };
     } catch (error) {
-      console.error('Error saving website settings:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error('Error saving website settings:', errorMsg);
       handleFirestoreError(error, OperationType.WRITE, 'settings/general');
-      return { success: false, error };
+      return { success: false, error: errorMsg };
     }
   };
 

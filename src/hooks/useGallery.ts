@@ -25,7 +25,7 @@ export function useGallery() {
       setItems(data);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching gallery:", error);
+      console.error("Error fetching gallery:", error instanceof Error ? error.message : String(error));
       setLoading(false);
     });
 

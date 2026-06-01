@@ -28,7 +28,7 @@ export function useBooks() {
       setBooks(data);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching books:", error);
+      console.error("Error fetching books:", error instanceof Error ? error.message : String(error));
       setLoading(false);
     });
 

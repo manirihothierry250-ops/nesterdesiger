@@ -50,6 +50,7 @@ const skills = [
   { name: 'Adobe Illustrator', level: '90%' },
   { name: 'Proshow', level: '85%' },
   { name: 'Microsoft Office Suite', level: '90%' },
+  { name: 'Driving License (Category B)', level: '100%' },
 ];
 
 const hobbies = [

@@ -78,7 +78,7 @@ export function AIChatbot() {
       const data = await response.json();
       setMessages(prev => [...prev, { role: 'bot', content: data.text || "I'm sorry, I couldn't process that. Please contact our support." }]);
     } catch (error) {
-      console.error('AI Error:', error);
+      console.error('AI Error:', error instanceof Error ? error.message : String(error));
       const activePhone = settings?.contact?.phone || '+250 782 739 381';
       setMessages(prev => [...prev, { role: 'bot', content: `Our AI is currently taking a break. Please contact us directly at ${activePhone}.` }]);
     } finally {

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { HashRouter as Router, Routes, Route, ScrollRestoration, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, ScrollRestoration, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Navbar, Footer, WhatsAppButton } from './components/layout/Navigation';
 import { AIChatbot } from './components/AIChatbot';
